@@ -6,16 +6,16 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import GroupIcon from "@mui/icons-material/Group";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz"; // Icon with 3 dots
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz"; 
 
 export const navigation = [
-  { title: "Home", icon: <HomeIcon />, path: "/home" },
-  { title: "Explore", icon: <ExploreIcon />, path: "/explore" },
-  { title: "Notifications", icon: <NotificationsIcon />, path: "/notifications" },
-  { title: "Messages", icon: <MessageIcon />, path: "/messages" },
-  { title: "Lists", icon: <ListAltIcon />, path: "/lists" },
-  { title: "Communities", icon: <GroupIcon />, path: "/communities" },
-  { title: "Verified", icon: <VerifiedIcon />, path: "/verified" },
-  { title: "Profile", icon: <AccountCircleIcon />, path: "/profile" },
-  { title: "More", icon: <MoreHorizIcon />, path: "/more" }
+  { title: "Home", icon: <HomeIcon style={{ color: "black" }}/>, path: "/home" },
+  { title: "Explore", icon: <ExploreIcon style={{ color: "black" }}/>, path: "/explore" },
+  { title: "Notifications", icon: <NotificationsIcon style={{ color: "black" }}/>, path: "/notifications" },
+  { title: "Messages", icon: <MessageIcon style={{ color: "black" }}/>, path: "/messages" },
+  { title: "Lists", icon: <ListAltIcon style={{ color: "black" }}/>, path: "/lists" },
+  { title: "Communities", icon: <GroupIcon style={{ color: "black" }}/>, path: "/communities" },
+  { title: "Verified", icon: <VerifiedIcon style={{ color: "black" }}/>, path: "/verified" },
+  { title: "Profile", icon: <AccountCircleIcon style={{ color: "black" }}/>, path: "/profile" },
+  { title: "More", icon: <MoreHorizIcon style={{ color: "black" }}/> , path: "/more" }
 ];
