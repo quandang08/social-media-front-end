@@ -6,7 +6,7 @@ import ListAltIcon from "@mui/icons-material/ListAlt";
 import GroupIcon from "@mui/icons-material/Group";
 import VerifiedIcon from "@mui/icons-material/Verified";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz"; 
+import PendingIcon from '@mui/icons-material/Pending';
 
 export const navigation = [
   { title: "Home", icon: <HomeIcon style={{ color: "black" }}/>, path: "/home" },
@@ -17,5 +17,5 @@ export const navigation = [
   { title: "Communities", icon: <GroupIcon style={{ color: "black" }}/>, path: "/communities" },
   { title: "Verified", icon: <VerifiedIcon style={{ color: "black" }}/>, path: "/verified" },
   { title: "Profile", icon: <AccountCircleIcon style={{ color: "black" }}/>, path: "/profile" },
-  { title: "More", icon: <MoreHorizIcon style={{ color: "black" }}/> , path: "/more" }
+  { title: "More", icon: <PendingIcon style={{ color: "black" }}/> , path: "/more" }
 ];
