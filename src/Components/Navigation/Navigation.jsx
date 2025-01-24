@@ -37,9 +37,9 @@ const Navigation = () => {
     >
       {/* Logo và Menu */}
       <Box>
-        <Box sx={{ mb: 1, textAlign: "center" }}>
+        <Box sx={{ mb: 1, textAlign: "left" }}>
           <img
-            src="logo.png"
+            src="logo.jpg"
             alt="Logo"
             style={{ height: 60, cursor: "pointer" }}
           />

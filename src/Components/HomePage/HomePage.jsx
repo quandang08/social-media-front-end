@@ -1,7 +1,7 @@
 import Box from "@mui/material/Box";
 import React from "react";
 import Navigation from "../Navigation/Navigation";
-
+import HomeSection from "../HomeSection/HomeSection";
 const HomePage = () => {
   return (
     <Box
@@ -9,7 +9,7 @@ const HomePage = () => {
       flexDirection={{ xs: "column", md: "row" }} // Xếp dọc trên màn hình nhỏ, ngang trên màn hình lớn
       justifyContent="space-between"
       sx={{
-        px: { xs: 2, md: 6, lg: 13 }, // Padding ngang tổng thể
+        px: { xs: 2, md: 6, lg: 15 }, // Padding ngang tổng thể
         gap: 1, // Khoảng cách giữa các phần
         minHeight: "100vh", // Chiều cao toàn màn hình
         bgcolor: "#f5f5f5", // Màu nền
@@ -19,7 +19,7 @@ const HomePage = () => {
       <Box
         flex={{ xs: "none", md: 0.2 }} // Chiếm 20% chiều rộng trên màn hình lớn
         bgcolor="white"
-        p={2}
+        p={1}
         sx={{
           borderRadius: 2,
           boxShadow: 1,
@@ -42,17 +42,14 @@ const HomePage = () => {
           overflowY: "auto",
         }}
       >
-        <h2>Middle Part</h2>
-        <p>This is the main content area. Add your central content here.</p>
-        <p>More content for testing scrolling in the middle section.</p>
-        <p>Even more content to make sure scrolling works as expected.</p>
+        <HomeSection/>
       </Box>
 
       {/* Right Part */}
       <Box
-        flex={{ xs: "none", md: 0.2 }} // Chiếm 20% chiều rộng trên màn hình lớn
+        flex={{ xs: "none", md: 0.4 }} // Chiếm 20% chiều rộng trên màn hình lớn
         bgcolor="white"
-        p={2}
+        p={1}
         sx={{
           borderRadius: 2,
           boxShadow: 1,
