@@ -1,8 +1,8 @@
+import React, { useState } from "react";
 import { Avatar, Button, TextField, IconButton } from "@mui/material";
-import React from "react";
+import { FaImage, FaPoll, FaSmile } from "react-icons/fa";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { FaImage, FaPoll, FaSmile } from "react-icons/fa"; 
 
 // Validation schema
 const validationSchema = Yup.object().shape({
@@ -10,13 +10,28 @@ const validationSchema = Yup.object().shape({
 });
 
 const HomeSection = () => {
+  const [selectedImage, setSelectedImage] = useState(null); // Khai báo kiểu phù hợp
+
+  const handleSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        if (typeof reader.result === "string") {
+          setSelectedImage(reader.result); // Chỉ gán nếu là chuỗi
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const formik = useFormik({
     initialValues: {
       content: "",
     },
     validationSchema,
     onSubmit: (values) => {
-      console.log("Form Submitted:", values);
+      console.log("Form Submitted:", values, selectedImage);
     },
   });
 
@@ -29,7 +44,6 @@ const HomeSection = () => {
         marginTop: 0,
       }}
     >
-      {/* Input Section */}
       <div
         style={{
           display: "flex",
@@ -55,6 +69,7 @@ const HomeSection = () => {
             gap: "10px",
           }}
         >
+          {/* Text Input */}
           <TextField
             variant="standard"
             placeholder="What is happening?"
@@ -62,10 +77,10 @@ const HomeSection = () => {
               fontSize: "18px",
               padding: 0,
               "& .MuiInputBase-root": {
-                padding: "0px", 
+                padding: "0px",
               },
               "& .MuiInput-underline:before": {
-                borderBottom: "none", 
+                borderBottom: "none",
               },
             }}
             {...formik.getFieldProps("content")}
@@ -74,13 +89,28 @@ const HomeSection = () => {
             helperText={formik.touched.content && formik.errors.content}
           />
 
-          {/* Border to separate input and icons */}
-          <div
-            style={{
-              borderBottom: "1px solid #ddd", 
-              marginTop: "10px",
-            }}
-          />
+          {/* Image Preview */}
+          {selectedImage && (
+            <div
+              style={{
+                marginTop: "10px",
+                border: "1px solid #ddd",
+                borderRadius: "10px",
+                overflow: "hidden",
+                maxHeight: "200px",
+                maxWidth: "100%",
+              }}
+            >
+              <img
+                src={selectedImage}
+                alt="Selected Preview"
+                style={{
+                  width: "100%",
+                  height: "auto",
+                }}
+              />
+            </div>
+          )}
 
           {/* Row for icons and post button */}
           <div
@@ -92,9 +122,21 @@ const HomeSection = () => {
           >
             {/* Media, Poll, Emoji icons */}
             <div style={{ display: "flex", gap: "10px" }}>
-              <IconButton style={{ color: "#007bff" }}>
+              {/* Upload Image Icon */}
+              <IconButton
+                style={{ color: "#007bff" }}
+                component="label"
+              >
                 <FaImage size={20} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleSelectImage}
+                />
               </IconButton>
+
+              {/* Other icons */}
               <IconButton style={{ color: "#007bff" }}>
                 <FaPoll size={20} />
               </IconButton>
@@ -110,12 +152,12 @@ const HomeSection = () => {
               disabled={!formik.values.content || Boolean(formik.errors.content)}
               style={{
                 textTransform: "uppercase",
-                backgroundColor: "#007bff", 
-                color: "#fff", 
+                backgroundColor: "#007bff",
+                color: "#fff",
                 fontWeight: "bold",
                 marginTop: "5px",
                 padding: "6px 16px",
-                borderRadius: "5px", 
+                borderRadius: "5px",
               }}
             >
               Post
