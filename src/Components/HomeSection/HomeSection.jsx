@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Avatar, Button, TextField, IconButton } from "@mui/material";
 import { FaImage, FaPoll, FaSmile } from "react-icons/fa";
+import Picker from "@emoji-mart/react";
+import data from "@emoji-mart/data";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -10,19 +13,25 @@ const validationSchema = Yup.object().shape({
 });
 
 const HomeSection = () => {
-  const [selectedImage, setSelectedImage] = useState(null); // Khai báo kiểu phù hợp
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false); // State để hiển thị picker
 
-  const handleSelectImage = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSelectImage = (event) => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
         if (typeof reader.result === "string") {
-          setSelectedImage(reader.result); // Chỉ gán nếu là chuỗi
+          setSelectedImage(reader.result);
         }
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleEmojiSelect = (emoji) => {
+    formik.setFieldValue("content", formik.values.content + emoji.native);
+    setShowEmojiPicker(false);
   };
 
   const formik = useFormik({
@@ -56,10 +65,8 @@ const HomeSection = () => {
           marginTop: 25,
         }}
       >
-        {/* Avatar */}
         <Avatar src="https://i.pravatar.cc/100" alt="username" />
 
-        {/* Input Form */}
         <form
           onSubmit={formik.handleSubmit}
           style={{
@@ -69,7 +76,6 @@ const HomeSection = () => {
             gap: "10px",
           }}
         >
-          {/* Text Input */}
           <TextField
             variant="standard"
             placeholder="What is happening?"
@@ -89,7 +95,6 @@ const HomeSection = () => {
             helperText={formik.touched.content && formik.errors.content}
           />
 
-          {/* Image Preview */}
           {selectedImage && (
             <div
               style={{
@@ -112,7 +117,6 @@ const HomeSection = () => {
             </div>
           )}
 
-          {/* Row for icons and post button */}
           <div
             style={{
               display: "flex",
@@ -120,13 +124,8 @@ const HomeSection = () => {
               marginTop: "10px",
             }}
           >
-            {/* Media, Poll, Emoji icons */}
             <div style={{ display: "flex", gap: "10px" }}>
-              {/* Upload Image Icon */}
-              <IconButton
-                style={{ color: "#007bff" }}
-                component="label"
-              >
+              <IconButton style={{ color: "#007bff" }} component="label">
                 <FaImage size={20} />
                 <input
                   type="file"
@@ -136,16 +135,18 @@ const HomeSection = () => {
                 />
               </IconButton>
 
-              {/* Other icons */}
               <IconButton style={{ color: "#007bff" }}>
                 <FaPoll size={20} />
               </IconButton>
-              <IconButton style={{ color: "#007bff" }}>
+
+              <IconButton
+                style={{ color: "#007bff" }}
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
                 <FaSmile size={20} />
               </IconButton>
             </div>
 
-            {/* Post Button */}
             <Button
               type="submit"
               variant="contained"
@@ -163,6 +164,13 @@ const HomeSection = () => {
               Post
             </Button>
           </div>
+
+          {/* Emoji Picker */}
+          {showEmojiPicker && (
+            <div style={{ marginTop: "20px" }}>
+              <Picker data={data} onEmojiSelect={handleEmojiSelect} />
+            </div>
+          )}
         </form>
       </div>
     </div>
