@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Avatar, Button, TextField, IconButton } from "@mui/material";
-import { FaImage, FaPoll, FaSmile } from "react-icons/fa";
+import { FaImage, FaPoll, FaSmile, FaMapMarkerAlt } from "react-icons/fa";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 
@@ -32,6 +32,11 @@ const HomeSection = () => {
   const handleEmojiSelect = (emoji) => {
     formik.setFieldValue("content", formik.values.content + emoji.native);
     setShowEmojiPicker(false);
+  };
+
+  const handleAddLocation = () => {
+    console.log("Add location clicked!");
+    // Thực hiện logic thêm vị trí tại đây
   };
 
   const formik = useFormik({
@@ -144,6 +149,14 @@ const HomeSection = () => {
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               >
                 <FaSmile size={20} />
+              </IconButton>
+
+              {/* Icon bản đồ */}
+              <IconButton
+                style={{ color: "#007bff" }}
+                onClick={handleAddLocation}
+              >
+                <FaMapMarkerAlt size={20} />
               </IconButton>
             </div>
 
