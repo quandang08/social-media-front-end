@@ -10,10 +10,8 @@ import BarChartIcon from "@mui/icons-material/BarChart";
 import ShareIcon from "@mui/icons-material/Share";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 
-const TweetCard = () => {
+const TweetCard = ({ content, imageSrc }) => {
   const navigate = useNavigate();
-
-  // State để điều khiển menu
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -26,19 +24,14 @@ const TweetCard = () => {
   };
 
   return (
-    <div className="flex space-x-5">
-      {/* Avatar của người dùng */}
+    <div className="flex space-x-5 mb-6">
       <Avatar
         onClick={() => navigate(`/profile/${6}`)}
         className="cursor-pointer"
         alt="username"
         src=""
       />
-
-      {/* Nội dung của tweet */}
       <div className="w-full max-h-[500px] overflow-hidden">
-        {" "}
-        {/* Giới hạn chiều cao và ẩn phần vượt quá */}
         <div className="flex items-center gap-2">
           <span className="font-semibold">Code With Amu</span>
           <span className="text-gray-600 text-sm">@codewithamu . 2m</span>
@@ -47,11 +40,9 @@ const TweetCard = () => {
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Twitter_Verified_Badge.svg/1200px-Twitter_Verified_Badge.svg.png"
             alt="Verified account"
           />
-
-          {/* Menu Section - Pending icon nằm ở góc phải */}
           <div className="ml-auto relative">
             <PendingIcon
-              style={{ color: "#1d9bf0", cursor: "pointer", fontSize: 20 }} // Sử dụng fontSize thay vì size
+              style={{ color: "#1d9bf0", cursor: "pointer", fontSize: 20 }}
               onClick={handleMenuOpen}
             />
             <Menu
@@ -69,51 +60,26 @@ const TweetCard = () => {
             </Menu>
           </div>
         </div>
-        {/* Nội dung bài đăng */}
         <div className="mt-0">
           <div className="cursor-pointer">
-            <p className="mb-5 p-0">
-              twitter clone - full stack project Spring Boot and React Tailwind
-            </p>
+            <p className="mb-5 p-0">{content}</p>
             <img
               className="w-full h-[350px] object-cover border border-gray-400 p-5 rounded-md"
-              src="logo512.png"
+              src={imageSrc}
               alt="Tweet image"
             />
           </div>
         </div>
-        {/* Các icon tương tác dưới bài đăng */}
         <div className="flex justify-between mt-4">
-          {/* Các icon tương tác bên trái */}
           <div className="flex items-center space-x-3">
-            <ChatBubbleOutlineIcon
-              style={{ cursor: "pointer", fontSize: 20 }}
-              className="transition-colors duration-200 hover:text-blue-500"
-            />
-            <FavoriteBorderIcon
-              style={{ cursor: "pointer", fontSize: 20 }}
-              className="transition-colors duration-200 hover:text-red-500"
-            />
-            <RepeatIcon
-              style={{ cursor: "pointer", fontSize: 20 }}
-              className="transition-colors duration-200 hover:text-green-500"
-            />
+            <ChatBubbleOutlineIcon style={{ cursor: "pointer", fontSize: 18 }} />
+            <FavoriteBorderIcon style={{ cursor: "pointer", fontSize: 18 }} />
+            <RepeatIcon style={{ cursor: "pointer", fontSize: 18 }} />
           </div>
-
-          {/* Các icon tương tác bên phải */}
           <div className="flex items-center space-x-3">
-            <BarChartIcon
-              style={{ cursor: "pointer", fontSize: 20 }}
-              className="transition-colors duration-200 hover:text-yellow-500"
-            />
-            <ShareIcon
-              style={{ cursor: "pointer", fontSize: 20 }}
-              className="transition-colors duration-200 hover:text-purple-500"
-            />
-            <BookmarkBorderIcon
-              style={{ cursor: "pointer", fontSize: 20 }}
-              className="transition-colors duration-200 hover:text-gray-500"
-            />
+            <BarChartIcon style={{ cursor: "pointer", fontSize: 18 }} />
+            <ShareIcon style={{ cursor: "pointer", fontSize: 18 }} />
+            <BookmarkBorderIcon style={{ cursor: "pointer", fontSize: 18 }} />
           </div>
         </div>
       </div>
@@ -121,4 +87,37 @@ const TweetCard = () => {
   );
 };
 
-export default TweetCard;
+const TweetFeed = () => {
+  const tweets = [
+    {
+      content: "twitter clone - full stack project Spring Boot and React Tailwind",
+      imageSrc: "logo512.png"
+    },
+    {
+      content: "Learning React and Material UI is fun!",
+      imageSrc: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
+    },
+    {
+      content: "Just finished a cool project, check it out!",
+      imageSrc: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Iconic_image_of_code.jpg"
+    },
+    {
+      content: "Spring Boot with React is the future!",
+      imageSrc: "https://upload.wikimedia.org/wikipedia/commons/c/c5/React_logo.png"
+    },
+    {
+      content: "Exploring new technologies for building web apps.",
+      imageSrc: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Frontend_Development.jpg"
+    }
+  ];
+
+  return (
+    <div>
+      {tweets.map((tweet, index) => (
+        <TweetCard key={index} content={tweet.content} imageSrc={tweet.imageSrc} />
+      ))}
+    </div>
+  );
+};
+
+export default TweetFeed;

@@ -2,6 +2,7 @@ import Box from "@mui/material/Box";
 import React from "react";
 import Navigation from "../Navigation/Navigation";
 import HomeSection from "../HomeSection/HomeSection";
+
 const HomePage = () => {
   return (
     <Box
@@ -23,8 +24,9 @@ const HomePage = () => {
         sx={{
           borderRadius: 2,
           boxShadow: 1,
-          height: { xs: "auto", md: "100vh" }, // Chiều cao cố định trên màn hình lớn
-          //overflowY: "auto", // Cuộn dọc nếu nội dung dài
+          height: "100vh", // Chiều cao cố định, không cuộn theo
+          position: "sticky", // Giữ phần này cố định khi cuộn
+          top: 0, // Đảm bảo phần này bám vào đầu trang khi cuộn
         }}
       >
         <Navigation />
@@ -39,10 +41,10 @@ const HomePage = () => {
           borderRadius: 2,
           boxShadow: 1,
           minHeight: "100%", // Lấp đầy chiều cao
-          overflowY: "auto",
+          overflowY: "auto", // Cuộn phần này khi nội dung quá dài
         }}
       >
-        <HomeSection/>
+        <HomeSection />
       </Box>
 
       {/* Right Part */}
@@ -53,8 +55,9 @@ const HomePage = () => {
         sx={{
           borderRadius: 2,
           boxShadow: 1,
-          height: { xs: "auto", md: "100vh" }, // Chiều cao cố định trên màn hình lớn
-          overflowY: "auto", // Cuộn dọc nếu nội dung dài
+          height: "100vh", // Chiều cao cố định, không cuộn theo
+          position: "sticky", // Giữ phần này cố định khi cuộn
+          top: 0, // Đảm bảo phần này bám vào đầu trang khi cuộn
         }}
       >
         <h3>Right Part</h3>
