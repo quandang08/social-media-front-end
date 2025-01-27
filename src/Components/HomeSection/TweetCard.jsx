@@ -71,15 +71,36 @@ const TweetCard = ({ content, imageSrc }) => {
           </div>
         </div>
         <div className="flex justify-between mt-4">
+          {/* Các icon tương tác bên trái */}
           <div className="flex items-center space-x-3">
-            <ChatBubbleOutlineIcon style={{ cursor: "pointer", fontSize: 18 }} />
-            <FavoriteBorderIcon style={{ cursor: "pointer", fontSize: 18 }} />
-            <RepeatIcon style={{ cursor: "pointer", fontSize: 18 }} />
+            <ChatBubbleOutlineIcon
+              style={{ cursor: "pointer", fontSize: 18 }}
+              className="transition-colors duration-200 hover:text-blue-500"
+            />
+            <FavoriteBorderIcon
+              style={{ cursor: "pointer", fontSize: 18 }}
+              className="transition-colors duration-200 hover:text-red-500"
+            />
+            <RepeatIcon
+              style={{ cursor: "pointer", fontSize: 18 }}
+              className="transition-colors duration-200 hover:text-green-500"
+            />
           </div>
+
+          {/* Các icon tương tác bên phải */}
           <div className="flex items-center space-x-3">
-            <BarChartIcon style={{ cursor: "pointer", fontSize: 18 }} />
-            <ShareIcon style={{ cursor: "pointer", fontSize: 18 }} />
-            <BookmarkBorderIcon style={{ cursor: "pointer", fontSize: 18 }} />
+            <BarChartIcon
+              style={{ cursor: "pointer", fontSize: 18 }}
+              className="transition-colors duration-200 hover:text-yellow-500"
+            />
+            <ShareIcon
+              style={{ cursor: "pointer", fontSize: 18 }}
+              className="transition-colors duration-200 hover:text-purple-500"
+            />
+            <BookmarkBorderIcon
+              style={{ cursor: "pointer", fontSize: 18 }}
+              className="transition-colors duration-200 hover:text-gray-500"
+            />
           </div>
         </div>
       </div>
@@ -90,31 +111,40 @@ const TweetCard = ({ content, imageSrc }) => {
 const TweetFeed = () => {
   const tweets = [
     {
-      content: "twitter clone - full stack project Spring Boot and React Tailwind",
-      imageSrc: "logo512.png"
+      content:
+        "twitter clone - full stack project Spring Boot and React Tailwind",
+      imageSrc: "logo512.png",
     },
     {
       content: "Learning React and Material UI is fun!",
-      imageSrc: "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg"
+      imageSrc:
+        "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg",
     },
     {
       content: "Just finished a cool project, check it out!",
-      imageSrc: "https://upload.wikimedia.org/wikipedia/commons/4/4f/Iconic_image_of_code.jpg"
+      imageSrc:
+        "https://upload.wikimedia.org/wikipedia/commons/4/4f/Iconic_image_of_code.jpg",
     },
     {
       content: "Spring Boot with React is the future!",
-      imageSrc: "https://upload.wikimedia.org/wikipedia/commons/c/c5/React_logo.png"
+      imageSrc:
+        "https://upload.wikimedia.org/wikipedia/commons/c/c5/React_logo.png",
     },
     {
       content: "Exploring new technologies for building web apps.",
-      imageSrc: "https://upload.wikimedia.org/wikipedia/commons/0/0d/Frontend_Development.jpg"
-    }
+      imageSrc:
+        "https://upload.wikimedia.org/wikipedia/commons/0/0d/Frontend_Development.jpg",
+    },
   ];
 
   return (
     <div>
       {tweets.map((tweet, index) => (
-        <TweetCard key={index} content={tweet.content} imageSrc={tweet.imageSrc} />
+        <TweetCard
+          key={index}
+          content={tweet.content}
+          imageSrc={tweet.imageSrc}
+        />
       ))}
     </div>
   );

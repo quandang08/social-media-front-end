@@ -6,8 +6,8 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import PendingIcon from "@mui/icons-material/Pending"; // Icon Pending
-import { navigation } from "./NavigationMenu"; // Dữ liệu menu
+import PendingIcon from "@mui/icons-material/Pending";
+import { navigation } from "./NavigationMenu";
 
 const Navigation = () => {
   // State để điều khiển menu
@@ -37,11 +37,11 @@ const Navigation = () => {
     >
       {/* Logo và Menu */}
       <Box>
-        <Box sx={{ mb: 1, textAlign: "left" }}>
+        <Box sx={{ mb: 1, textAlign: "left", pl: 0.3 }}>
           <img
             src="logo.jpg"
             alt="Logo"
-            style={{ height: 60, cursor: "pointer" }}
+            style={{ height: 45, cursor: "pointer" }}
           />
         </Box>
 
