@@ -32,7 +32,7 @@ const styles = {
   },
   form: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column", // Đây là giá trị hợp lệ cho flexDirection
     flexGrow: 1,
     gap: "10px",
   },
@@ -117,7 +117,11 @@ const HomeSection = () => {
           {/* Image Preview */}
           {selectedImage && (
             <div style={styles.imagePreview}>
-              <img src={selectedImage} alt="Selected Preview" style={{ width: "100%", height: "auto" }} />
+              <img
+                src={selectedImage}
+                alt="Selected Preview"
+                style={{ width: "100%", height: "auto" }}
+              />
             </div>
           )}
 
@@ -126,18 +130,29 @@ const HomeSection = () => {
             <div style={{ display: "flex", gap: "10px" }}>
               <IconButton style={{ color: "#007bff" }} component="label">
                 <FaImage size={20} />
-                <input type="file" accept="image/*" hidden onChange={handleSelectImage} />
+                <input
+                  type="file"
+                  accept="image/*"
+                  hidden
+                  onChange={handleSelectImage}
+                />
               </IconButton>
 
               <IconButton style={{ color: "#007bff" }}>
                 <FaPoll size={20} />
               </IconButton>
 
-              <IconButton style={{ color: "#007bff" }} onClick={() => setShowEmojiPicker(!showEmojiPicker)}>
+              <IconButton
+                style={{ color: "#007bff" }}
+                onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+              >
                 <FaSmile size={20} />
               </IconButton>
 
-              <IconButton style={{ color: "#007bff" }} onClick={handleAddLocation}>
+              <IconButton
+                style={{ color: "#007bff" }}
+                onClick={handleAddLocation}
+              >
                 <FaMapMarkerAlt size={20} />
               </IconButton>
             </div>
@@ -145,7 +160,9 @@ const HomeSection = () => {
             <Button
               type="submit"
               variant="contained"
-              disabled={!formik.values.content || Boolean(formik.errors.content)}
+              disabled={
+                !formik.values.content || Boolean(formik.errors.content)
+              }
               style={{
                 textTransform: "uppercase",
                 backgroundColor: "#007bff",
@@ -161,7 +178,11 @@ const HomeSection = () => {
           </div>
 
           {/* Emoji Picker */}
-          {showEmojiPicker && <div style={styles.emojiPicker}><Picker data={data} onEmojiSelect={handleEmojiSelect} /></div>}
+          {showEmojiPicker && (
+            <div style={styles.emojiPicker}>
+              <Picker data={data} onEmojiSelect={handleEmojiSelect} />
+            </div>
+          )}
         </form>
       </div>
 

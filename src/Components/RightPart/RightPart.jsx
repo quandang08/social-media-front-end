@@ -1,19 +1,22 @@
 import React from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import Brightness4Icon from "@mui/icons-material/Brightness4"; 
 import { Button } from "@mui/material";
 
 const RightPart = () => {
   return (
     <div className="py-5 px-4 space-y-7 bg-white text-black">
       {/* Search Bar */}
-      <div className="relative flex items-center">
+      <div className="relative flex items-center space-x-2">
+        {" "}
         <input
           type="text"
           placeholder="Search"
-          className="py-2 rounded-full bg-gray-100 text-black w-full pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="py-2 rounded-full bg-gray-100 text-black w-full pl-12 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <SearchIcon className="absolute left-4 top-2 text-gray-500" />
+        <Brightness4Icon className="text-gray-500 cursor-pointer ml-2" />{" "}
       </div>
 
       {/* Subscribe to Premium */}
@@ -25,15 +28,16 @@ const RightPart = () => {
         </p>
         <Button
           variant="contained"
-          fullWidth
           size="small"
           sx={{
             textTransform: "capitalize",
-            borderRadius: "30px", 
+            borderRadius: "30px",
             background: "#1DA1F2",
-            fontSize: "0.875rem", 
-            padding: "6px 16px", 
-            paddingTop:"10px",
+            fontSize: "0.875rem",
+            padding: "6px 16px",
+            width: "50%",
+            margin: "0 auto",
+            marginTop: "10px",
             ":hover": { background: "#0d8adf" },
           }}
           className="mt-4"

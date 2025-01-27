@@ -8,26 +8,24 @@ const HomePage = () => {
   return (
     <Box
       display="flex"
-      flexDirection={{ xs: "column", md: "row" }} 
+      flexDirection={{ xs: "column", md: "row" }}
       justifyContent="space-between"
       sx={{
-        px: { xs: 2, md: 6, lg: 15 }, 
-        gap: 1, 
-        minHeight: "100vh", 
-        bgcolor: "#f5f5f5", 
+        px: { xs: 2, md: 4, lg: 10 },
+        gap: 0.5,
+        minHeight: "100vh",
+        bgcolor: "#f5f5f5",
       }}
     >
       {/* Left Part */}
       <Box
-        flex={{ xs: "none", md: 0.2 }} 
+        flex={{ xs: "none", md: 0.2 }}
         bgcolor="white"
         p={1}
         sx={{
-          borderRadius: 2,
-          boxShadow: 1,
-          height: "100vh", 
-          position: "sticky", 
-          top: 0, 
+          height: "100vh",
+          position: "sticky",
+          top: 0,
         }}
       >
         <Navigation />
@@ -35,14 +33,12 @@ const HomePage = () => {
 
       {/* Middle Part */}
       <Box
-        flex={{ xs: 1, md: 0.6 }} 
+        flex={{ xs: 1, md: 0.6 }}
         bgcolor="white"
-        p={4}
+        p={3}
         sx={{
-          borderRadius: 2,
-          boxShadow: 1,
-          minHeight: "100%", 
-          overflowY: "auto", 
+          minHeight: "100%",
+          overflowY: "auto",
         }}
       >
         <HomeSection />
@@ -50,16 +46,18 @@ const HomePage = () => {
 
       {/* Right Part */}
       <Box
-        flex={{ xs: "none", md: 0.4 }} 
+        flex={{ xs: "none", md: 0.4 }}
         bgcolor="white"
         p={1}
         sx={{
-          borderRadius: 2,
-          boxShadow: 1,
-          height: "100vh", 
-          position: "sticky", 
-          top: 0, 
-          overflowY: "auto", 
+          height: "100vh",
+          position: "sticky",
+          top: 0,
+          overflowY: "auto",
+          scrollbarWidth: "none", // Ẩn thanh cuộn trên Firefox
+          "&::-webkit-scrollbar": {
+            display: "none", // Ẩn thanh cuộn trên Chrome, Edge
+          },
         }}
       >
         <RightPart />

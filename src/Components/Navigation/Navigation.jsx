@@ -6,11 +6,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import PendingIcon from "@mui/icons-material/Pending";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { navigation } from "./NavigationMenu";
 
 const Navigation = () => {
-  // State để điều khiển menu
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
@@ -61,10 +60,11 @@ const Navigation = () => {
               sx={{
                 px: 1.5,
                 py: 1,
-                borderRadius: 1,
-                transition: "background-color 0.3s",
+                borderRadius: 1, // Giá trị mặc định
+                transition: "all 0.3s", // Thêm hiệu ứng mượt cho hover
                 "&:hover": {
-                  bgcolor: "#1a8cd8",
+                  bgcolor: "rgba(29, 155, 240, 0.1)", // Màu nền hover
+                  borderRadius: "12px", // Tăng border-radius khi hover
                 },
               }}
             >
@@ -108,54 +108,58 @@ const Navigation = () => {
       <Box
         display="flex"
         alignItems="center"
-        justifyContent="space-between"
         sx={{
           p: 2,
           mt: 1,
         }}
       >
-        <Avatar
-          alt="User"
-          src="user-avatar.jpg"
-          sx={{ width: 48, height: 48 }}
-        />
-        <Box sx={{ ml: 1, flexGrow: 1 }}>
-          <Typography sx={{ fontSize: 16, fontWeight: "bold" }}>
-            Username
-          </Typography>
-          <Typography sx={{ fontSize: 14, color: "#aaa" }}>
-            @userhandle
-          </Typography>
-        </Box>
-        {/* Icon Pending với Menu */}
-        <Box>
-          <PendingIcon
-            size={20}
-            sx={{
-              color: "#1d9bf0",
-              cursor: "pointer",
-            }}
-            onClick={handleMenuOpen} // Mở menu khi click
+        {/* Avatar và Thông tin User */}
+        <Box display="flex" alignItems="center" flexGrow={1}>
+          <Avatar
+            alt="User"
+            src="user-avatar.jpg"
+            sx={{ width: 40, height: 40 }} // Giảm kích thước avatar
           />
-          {/* Menu */}
-          <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleMenuClose}
-            PaperProps={{
-              sx: {
-                mt: 1,
-                boxShadow: 3,
-                borderRadius: 2,
-              },
-            }}
-          >
-            <MenuItem onClick={handleMenuClose}>Option 1</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Option 2</MenuItem>
-            <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
-          </Menu>
+          <Box sx={{ ml: 1.5 }}>
+            {" "}
+            {/* Tăng khoảng cách giữa avatar và thông tin */}
+            <Typography sx={{ fontSize: 15, fontWeight: "bold" }}>
+              Username
+            </Typography>
+            <Typography sx={{ fontSize: 13, color: "#aaa" }}>
+              @userhandle
+            </Typography>
+          </Box>
         </Box>
+
+        {/* Icon MoreHoriz */}
+        <MoreHorizIcon
+          size={20}
+          sx={{
+            color: "#1d9bf0",
+            cursor: "pointer",
+          }}
+          onClick={handleMenuOpen} // Mở menu khi click
+        />
       </Box>
+
+      {/* Menu */}
+      <Menu
+        anchorEl={anchorEl}
+        open={open}
+        onClose={handleMenuClose}
+        PaperProps={{
+          sx: {
+            mt: 1,
+            boxShadow: 3,
+            borderRadius: 2,
+          },
+        }}
+      >
+        <MenuItem onClick={handleMenuClose}>Option 1</MenuItem>
+        <MenuItem onClick={handleMenuClose}>Option 2</MenuItem>
+        <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+      </Menu>
     </Box>
   );
 };
