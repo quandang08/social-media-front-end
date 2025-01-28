@@ -5,7 +5,7 @@ import Authentication from "./Components/Authentication/Authentication";
 
 function App() {
   // Sử dụng trạng thái để mô phỏng điều kiện (true/false)
-  const isAuthenticated = true; // Thay đổi giá trị này để kiểm tra điều hướng
+  const isAuthenticated = true; 
 
   return (
     <div className="">

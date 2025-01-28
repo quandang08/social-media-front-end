@@ -133,11 +133,11 @@ const Navigation = () => {
         </Box>
 
         {/* Icon MoreHoriz */}
-        <MoreHorizIcon
-          size={20}
+        <MoreHorizIcon          
           sx={{
             color: "#1d9bf0",
             cursor: "pointer",
+            fontSize: "20px",
           }}
           onClick={handleMenuOpen} // Mở menu khi click
         />
