@@ -3,6 +3,9 @@ import React from "react";
 import Navigation from "../Navigation/Navigation";
 import HomeSection from "../HomeSection/HomeSection";
 import RightPart from "../RightPart/RightPart";
+import { Routes } from "react-router-dom";
+import Profile from "../Profile/Profile";
+import { Route } from "react-router-dom";
 
 const HomePage = () => {
   return (
@@ -41,7 +44,10 @@ const HomePage = () => {
           overflowY: "auto",
         }}
       >
-        <HomeSection />
+        <Routes>
+          <Route path="/" element={<HomeSection />} />
+          <Route path="/profile" element={<Profile />} />
+        </Routes>
       </Box>
 
       {/* Right Part */}

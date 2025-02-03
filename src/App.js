@@ -4,14 +4,13 @@ import HomePage from "./Components/HomePage/HomePage";
 import Authentication from "./Components/Authentication/Authentication";
 
 function App() {
-  // Sử dụng trạng thái để mô phỏng điều kiện (true/false)
-  const isAuthenticated = true; 
+  const isAuthenticated = true;
 
   return (
-    <div className="">
+    <div>
       <Routes>
         <Route
-          path="/"
+          path="/*"
           element={isAuthenticated ? <HomePage /> : <Authentication />}
         />
       </Routes>
