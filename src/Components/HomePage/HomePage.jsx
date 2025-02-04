@@ -46,7 +46,8 @@ const HomePage = () => {
         }}
       >
         <Routes>
-          <Route path="/" element={<HomeSection />} />
+          {/* <Route path="/" element={<HomeSection />} /> */}
+          <Route path="/home" element={<HomeSection />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/twit/:id" element={<TwitDetails />} />
         </Routes>
