@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Avatar, Menu, MenuItem } from "@mui/material";
 import PendingIcon from "@mui/icons-material/Pending";
 import { useNavigate } from "react-router-dom";
-
 import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import RepeatIcon from "@mui/icons-material/Repeat";
@@ -61,7 +60,10 @@ const TweetCard = ({ content, imageSrc }) => {
           </div>
         </div>
         <div className="mt-0">
-          <div className="cursor-pointer">
+          <div
+            className="cursor-pointer"
+            onClick={() => navigate(`/twit/${3}`)} // Thêm sự kiện onClick ở đây để điều hướng
+          >
             <p className="mb-5 p-0">{content}</p>
             <img
               className="w-full h-[350px] object-cover border border-gray-400 p-5 rounded-md"
@@ -107,6 +109,7 @@ const TweetCard = ({ content, imageSrc }) => {
     </div>
   );
 };
+
 
 const TweetFeed = () => {
   const tweets = [

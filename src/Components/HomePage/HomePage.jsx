@@ -6,6 +6,7 @@ import RightPart from "../RightPart/RightPart";
 import { Routes } from "react-router-dom";
 import Profile from "../Profile/Profile";
 import { Route } from "react-router-dom";
+import TwitDetails from "../TwitDetails/TwitDetails";
 
 const HomePage = () => {
   return (
@@ -46,7 +47,8 @@ const HomePage = () => {
       >
         <Routes>
           <Route path="/" element={<HomeSection />} />
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/:id" element={<Profile />} />
+          <Route path="/twit/:id" element={<TwitDetails />} />
         </Routes>
       </Box>
 

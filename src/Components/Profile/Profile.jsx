@@ -1,35 +1,41 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { Box, Button, Avatar, Tab, Tabs } from '@mui/material'; 
 import { useNavigate } from 'react-router-dom';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import { CalendarMonth, Place } from '@mui/icons-material';
 import { TabContext, TabList, TabPanel } from '@mui/lab';
+import TweetCard from '../HomeSection/TweetCard';
+
 
 const Profile = () => {
+    
+    const { id } = useParams(); // Lấy id từ URL
     const [tabValue, setTabValue] = useState('1');
     const navigate = useNavigate();
 
     const handleBack = () => navigate(-1);
     const handleOpenProfileModel = () => {
-        console.log("open profile model")
+        console.log("open profile model");
     }
     const handleFollowUser = () => {
-        console.log("follow user")
+        console.log("follow user");
     }
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
 
         if (newValue === '4') {
-            console.log("tab 4")
+            console.log("tab 4");
         } else if (newValue === '1') {
-            console.log("users tweets")
+            console.log("users tweets");
         }
     }
+
     return (
-        <div className="">
-            <section className='{`z-50 flex items-center sticky top-0 bg-opacity-95`}' >
+        <div>
+            <section className='{`z-50 flex items-center sticky top-0 bg-opacity-95`}'>
                 <KeyboardBackspaceIcon className="cursor-pointer" onClick={handleBack} />
                 <h1 className='py-5 text-xl font-bold opacity-90 ml-5'>Code With Amu</h1>
             </section>
@@ -121,7 +127,9 @@ const Profile = () => {
                             <Tab label="Likes" value="4" />
                         </TabList>
                     </Box>
-                    <TabPanel value="1">user tweets</TabPanel>
+                    <TabPanel value="1">
+                        {[1,1,1,1].map((item)=><TweetCard key={item}/>)}
+                    </TabPanel>
                     <TabPanel value="2">user replies</TabPanel>
                     <TabPanel value="3">Media</TabPanel>
                     <TabPanel value="4">Likes</TabPanel>
