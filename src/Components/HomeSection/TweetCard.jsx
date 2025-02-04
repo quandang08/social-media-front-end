@@ -66,7 +66,7 @@ const TweetCard = ({ content, imageSrc }) => {
             <img
               className="w-full h-[350px] object-cover border border-gray-400 p-5 rounded-md"
               src={imageSrc}
-              alt="Tweet image"
+              alt="Tweet"
             />
           </div>
         </div>
