@@ -2,8 +2,10 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
-import ClearIcon from "@mui/icons-material/Clear";
 import { useFormik } from "formik";
+import TextField from "@mui/material/TextField";
+import SaveIcon from "@mui/icons-material/Save";
+import * as Yup from "yup";
 
 const style = {
   position: "absolute",
@@ -24,7 +26,11 @@ const ProfileModal = () => {
   const [open, setOpen] = React.useState(false);
 
   const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    formik.resetForm();
+    formik.setFieldValue("backgroundImage", "");
+    setOpen(false);
+  };
 
   const formik = useFormik({
     initialValues: {
@@ -34,38 +40,52 @@ const ProfileModal = () => {
       bio: "",
       backgroundImage: "",
     },
+    validationSchema: Yup.object({
+      fullname: Yup.string().required("Fullname is required"),
+      website: Yup.string().url("Invalid URL format"),
+      bio: Yup.string().max(150, "Bio should not exceed 150 characters"),
+    }),
     onSubmit: (values) => {
       console.log("Form Values:", values);
       handleClose();
+      alert("Profile updated successfully!");
     },
   });
 
   const handleImageChange = (event) => {
-    const file = event.target.files[0];
+    const file = event.target?.files?.[0];
     if (file) {
-      const imageURL = URL.createObjectURL(file);
-      formik.setFieldValue("backgroundImage", imageURL);
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload a valid image file.");
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        formik.setFieldValue("backgroundImage", reader.result);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
   return (
     <React.Fragment>
       <Button onClick={handleOpen}>Open Profile Modal</Button>
-      <Modal open={open} onClose={handleClose} aria-labelledby="profile-modal-title">
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="profile-modal-title"
+      >
         <Box sx={style}>
           <form onSubmit={formik.handleSubmit}>
             {/* Header Modal */}
             <div className="flex justify-between items-center">
-              <h2 style={{ fontWeight: "bold" }}>Edit Profile</h2>
+              <h2 className="font-bold">Edit Profile</h2>
               <Button
                 type="submit"
                 variant="contained"
-                sx={{
-                  textTransform: "none",
-                  fontWeight: "bold",
-                  borderRadius: 2,
-                  paddingX: 4,
-                }}
+                color="primary"
+                startIcon={<SaveIcon />}
+                className="text-sm font-bold rounded-md"
               >
                 Save
               </Button>
@@ -77,58 +97,92 @@ const ProfileModal = () => {
                 className="w-full h-[12rem] object-cover object-center"
                 src={
                   formik.values.backgroundImage ||
-                  "https://cdn.pixabay.com/photo/2025/02/01/07/01/squirrel-9374282_1280.jpg"
+                  "https://via.placeholder.com/150"
                 }
                 alt="Background"
               />
+              
               <input
                 type="file"
+                accept="image/*"
                 className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
                 onChange={handleImageChange}
-                name="backgroundImage"
               />
             </div>
 
             {/* Form Scrollable Section */}
-            <Box mt={4} sx={{ maxHeight: "70vh", overflowY: "auto", display: "flex", flexDirection: "column", gap: 2 }}>
+            <Box
+              mt={4}
+              sx={{
+                maxHeight: "70vh",
+                overflowY: "auto",
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+              }}
+            >
               <div>
                 <label htmlFor="fullname">Fullname</label>
-                <input
+                <TextField
                   id="fullname"
                   name="fullname"
+                  label="Fullname"
+                  variant="outlined"
                   value={formik.values.fullname}
                   onChange={formik.handleChange}
-                  className="border rounded-md w-full p-2"
+                  error={
+                    formik.touched.fullname && Boolean(formik.errors.fullname)
+                  }
+                  helperText={formik.touched.fullname && formik.errors.fullname}
+                  fullWidth
+                  margin="normal"
                 />
               </div>
               <div>
                 <label htmlFor="website">Website</label>
-                <input
+                <TextField
                   id="website"
                   name="website"
+                  label="Website"
+                  variant="outlined"
                   value={formik.values.website}
                   onChange={formik.handleChange}
-                  className="border rounded-md w-full p-2"
+                  error={
+                    formik.touched.website && Boolean(formik.errors.website)
+                  }
+                  helperText={formik.touched.website && formik.errors.website}
+                  fullWidth
+                  margin="normal"
                 />
               </div>
               <div>
                 <label htmlFor="location">Location</label>
-                <input
+                <TextField
                   id="location"
                   name="location"
+                  label="Location"
+                  variant="outlined"
                   value={formik.values.location}
                   onChange={formik.handleChange}
-                  className="border rounded-md w-full p-2"
+                  fullWidth
+                  margin="normal"
                 />
               </div>
               <div>
                 <label htmlFor="bio">Bio</label>
-                <textarea
+                <TextField
                   id="bio"
                   name="bio"
+                  label="Bio"
+                  variant="outlined"
                   value={formik.values.bio}
                   onChange={formik.handleChange}
-                  className="border rounded-md w-full p-2"
+                  error={formik.touched.bio && Boolean(formik.errors.bio)}
+                  helperText={formik.touched.bio && formik.errors.bio}
+                  fullWidth
+                  multiline
+                  rows={4}
+                  margin="normal"
                 />
               </div>
             </Box>
