@@ -3,7 +3,7 @@ import React from "react";
 import Navigation from "../Navigation/Navigation";
 import HomeSection from "../HomeSection/HomeSection";
 import RightPart from "../RightPart/RightPart";
-import { Routes } from "react-router-dom";
+import { Navigate, Routes } from "react-router-dom";
 import Profile from "../Profile/Profile";
 import { Route } from "react-router-dom";
 import TwitDetails from "../TwitDetails/TwitDetails";
@@ -46,6 +46,7 @@ const HomePage = () => {
         }}
       >
         <Routes>
+          <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomeSection />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/twit/:id" element={<TwitDetails />} />
@@ -62,9 +63,9 @@ const HomePage = () => {
           position: "sticky",
           top: 0,
           overflowY: "auto",
-          scrollbarWidth: "none", // Ẩn thanh cuộn trên Firefox
+          scrollbarWidth: "none",
           "&::-webkit-scrollbar": {
-            display: "none", // Ẩn thanh cuộn trên Chrome, Edge
+            display: "none", 
           },
         }}
       >
