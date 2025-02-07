@@ -15,10 +15,9 @@ const Profile = () => {
   const [openProfileModal, setOpenProfileModal] = useState(false);
 
 
-
   const handleBack = () => navigate(-1);
   const handleOpenProfileModal = () => {
-    console.log('Opening profile modal');
+    console.log('Opening profile modal'); 
     setOpenProfileModal(true);
   };
   const handleCloseProfileModal = () => setOpenProfileModal(false);
