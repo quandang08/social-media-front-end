@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import SearchIcon from "@mui/icons-material/Search";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import Brightness4Icon from "@mui/icons-material/Brightness4"; 
@@ -6,18 +6,22 @@ import { Button } from "@mui/material";
 import SubscriptionModal from "../SubscriptionModal/SubscriptionModal";
 
 const RightPart = () => {
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const handleOpenModal = () => setModalOpen(true);
+  const handleCloseModal = () => setModalOpen(false);
+
   return (
     <div className="py-5 px-4 space-y-7 bg-white text-black">
       {/* Search Bar */}
       <div className="relative flex items-center space-x-2">
-        {" "}
         <input
           type="text"
           placeholder="Search"
           className="py-2 rounded-full bg-gray-100 text-black w-full pl-12 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <SearchIcon className="absolute left-4 top-2 text-gray-500" />
-        <Brightness4Icon className="text-gray-500 cursor-pointer ml-2" />{" "}
+        <Brightness4Icon className="text-gray-500 cursor-pointer ml-2" />
       </div>
 
       {/* Subscribe to Premium */}
@@ -41,7 +45,7 @@ const RightPart = () => {
             marginTop: "10px",
             ":hover": { background: "#0d8adf" },
           }}
-          className="mt-4"
+          onClick={handleOpenModal} // Thêm sự kiện click
         >
           Subscribe
         </Button>
@@ -109,8 +113,9 @@ const RightPart = () => {
         </p>
       </section>
 
+        {/* Subscription Modal */}
       <section>
-        <SubscriptionModal/>
+        <SubscriptionModal open={isModalOpen} handleClose={handleCloseModal} />
       </section>
     </div>
   );
