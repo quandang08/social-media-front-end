@@ -20,14 +20,10 @@ const style = {
   p: 2,
 };
 
-export default function ReplyModal() {
-  const [open, setOpen] = React.useState(true);
-  const handleClose = () => setOpen(false);
-
+export default function ReplyModal({ open, handleClose }) {
   return (
     <Modal open={open} onClose={handleClose}>
       <Box sx={style}>
-        {/* Header with Close Button */}
         <div className="flex justify-between items-center mb-4 px-2">
           <IconButton onClick={handleClose} className="text-white">
             <CloseIcon />
@@ -82,7 +78,8 @@ export default function ReplyModal() {
             <IoMdSend size={18} /> Reply
           </button>
         </div>
-      </Box>
+
+        </Box>
     </Modal>
   );
 }

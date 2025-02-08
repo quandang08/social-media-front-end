@@ -13,6 +13,7 @@ import ReplyModal from "./ReplyModal";
 const TweetCard = ({ content, imageSrc }) => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [openReplyModal, setOpenReplyModal] = useState(false);
   const open = Boolean(anchorEl);
 
   const handleMenuOpen = (event) => {
@@ -21,6 +22,13 @@ const TweetCard = ({ content, imageSrc }) => {
 
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+  const handleOpenReplyModal = () => {
+    setOpenReplyModal(true);
+  };
+
+  const handleCloseReplyModal = () => {
+    setOpenReplyModal(false);
   };
 
   return (
@@ -62,21 +70,20 @@ const TweetCard = ({ content, imageSrc }) => {
             </div>
           </div>
           <div className="mt-0">
-            <div
-              className="cursor-pointer"
-              onClick={() => navigate(`/twit/${3}`)} 
-            >
+            <div className="cursor-pointer" onClick={() => navigate(`/twit/${3}`)}>
               <p className="mb-5 p-0">{content}</p>
               <img
-                className="w-full h-[350px] object-cover border border-gray-400 p-5 rounded-md"
+                className="w-full aspect-video object-contain mx-auto border rounded-md"
                 src={imageSrc}
                 alt="Tweet"
               />
+
             </div>
           </div>
           <div className="flex justify-between mt-4">
             <div className="flex items-center space-x-3">
               <ChatBubbleOutlineIcon
+                onClick={handleOpenReplyModal} // Nhấp để mở ReplyModal
                 style={{ cursor: "pointer", fontSize: 18 }}
                 className="transition-colors duration-200 hover:text-blue-500"
               />
@@ -89,7 +96,7 @@ const TweetCard = ({ content, imageSrc }) => {
                 className="transition-colors duration-200 hover:text-green-500"
               />
             </div>
-  
+
             <div className="flex items-center space-x-3">
               <BarChartIcon
                 style={{ cursor: "pointer", fontSize: 18 }}
@@ -106,14 +113,13 @@ const TweetCard = ({ content, imageSrc }) => {
             </div>
           </div>
         </div>
-  
+
         <section>
-          <ReplyModal />
+          <ReplyModal open={openReplyModal} handleClose={handleCloseReplyModal} />
         </section>
       </div>
     </React.Fragment>
   );
-  
 };
 
 
@@ -127,22 +133,22 @@ const TweetFeed = () => {
     {
       content: "Learning React and Material UI is fun!",
       imageSrc:
-        "https://upload.wikimedia.org/wikipedia/commons/a/a7/React-icon.svg",
+        "logo512.png",
     },
     {
       content: "Just finished a cool project, check it out!",
       imageSrc:
-        "https://upload.wikimedia.org/wikipedia/commons/4/4f/Iconic_image_of_code.jpg",
+        "logo512.png",
     },
     {
       content: "Spring Boot with React is the future!",
       imageSrc:
-        "https://upload.wikimedia.org/wikipedia/commons/c/c5/React_logo.png",
+        "logo512.png",
     },
     {
       content: "Exploring new technologies for building web apps.",
       imageSrc:
-        "https://upload.wikimedia.org/wikipedia/commons/0/0d/Frontend_Development.jpg",
+        "logo512.png",
     },
   ];
 
