@@ -3,6 +3,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import Brightness4Icon from "@mui/icons-material/Brightness4"; 
 import { Button } from "@mui/material";
+import SubscriptionModal from "../SubscriptionModal/SubscriptionModal";
 
 const RightPart = () => {
   return (
@@ -106,6 +107,10 @@ const RightPart = () => {
         <p className="text-blue-500 text-sm cursor-pointer hover:underline">
           Show more
         </p>
+      </section>
+
+      <section>
+        <SubscriptionModal/>
       </section>
     </div>
   );
