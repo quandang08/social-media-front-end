@@ -24,18 +24,22 @@ const Navigation = () => {
   return (
     <Box
       sx={{
-        height: "100vh",
-        width: { xs: "70px", md: "250px" },
         display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        overflowY: "auto",
-        px: 2,
-        py: 0,
+        flexDirection: { xs: "row", md: "column" },
+        height: { xs: "auto", md: "100vh" },
+        width: { xs: "100%", md: "250px" },
+        position: "fixed",
+        bottom: 0,
+        backgroundColor: "#fff",
+        zIndex: 10,
+        padding: 1,
+        boxShadow: "0 -2px 5px rgba(0,0,0,0.1)",
+        justifyContent: "space-around",
+        alignItems: "center",
       }}
     >
       {/* Logo và Menu */}
-      <Box>
+      <Box sx={{ display: "flex", flexDirection: { xs: "row", md: "column" } }}>
         <Box sx={{ mb: 1, textAlign: "left", pl: 0.3 }}>
           <img
             src="logo.jpg"
@@ -58,13 +62,13 @@ const Navigation = () => {
               display="flex"
               alignItems="center"
               sx={{
-                px: 1.5,
-                py: 1,
-                borderRadius: 1, // Giá trị mặc định
-                transition: "all 0.3s", // Thêm hiệu ứng mượt cho hover
+                px: 0.5,
+                py: 0.5,
+                borderRadius: 1,
+                transition: "all 0.3s",
                 "&:hover": {
-                  bgcolor: "rgba(29, 155, 240, 0.1)", // Màu nền hover
-                  borderRadius: "12px", // Tăng border-radius khi hover
+                  bgcolor: "rgba(29, 155, 240, 0.1)",
+                  borderRadius: "12px",
                 },
               }}
             >
@@ -84,7 +88,7 @@ const Navigation = () => {
         ))}
       </Box>
 
-      {/* Nút Tweet */}
+      {/* Nút Post */}
       <Button
         variant="contained"
         fullWidth
@@ -105,24 +109,25 @@ const Navigation = () => {
       </Button>
 
       {/* Profile Section */}
+      {/* Profile Section */}
       <Box
         display="flex"
         alignItems="center"
+        justifyContent="space-between"
         sx={{
           p: 2,
           mt: 1,
+          borderTop: "1px solid #e0e0e0", // Thêm để phân biệt các phần
         }}
       >
         {/* Avatar và Thông tin User */}
-        <Box display="flex" alignItems="center" flexGrow={1}>
+        <Box display="flex" alignItems="center" sx={{ gap: 1.5 }}>
           <Avatar
             alt="User"
             src="user-avatar.jpg"
-            sx={{ width: 40, height: 40 }} // Giảm kích thước avatar
+            sx={{ width: 40, height: 40 }}
           />
-          <Box sx={{ ml: 1.5 }}>
-            {" "}
-            {/* Tăng khoảng cách giữa avatar và thông tin */}
+          <Box>
             <Typography sx={{ fontSize: 15, fontWeight: "bold" }}>
               Username
             </Typography>
@@ -133,13 +138,13 @@ const Navigation = () => {
         </Box>
 
         {/* Icon MoreHoriz */}
-        <MoreHorizIcon          
+        <MoreHorizIcon
           sx={{
             color: "#1d9bf0",
             cursor: "pointer",
             fontSize: "20px",
           }}
-          onClick={handleMenuOpen} // Mở menu khi click
+          onClick={handleMenuOpen}
         />
       </Box>
 
@@ -148,11 +153,13 @@ const Navigation = () => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleMenuClose}
-        PaperProps={{
-          sx: {
-            mt: 1,
-            boxShadow: 3,
-            borderRadius: 2,
+        slotProps={{
+          paper: {
+            sx: {
+              mt: 1,
+              boxShadow: 3,
+              borderRadius: 2,
+            },
           },
         }}
       >
@@ -160,6 +167,7 @@ const Navigation = () => {
         <MenuItem onClick={handleMenuClose}>Option 2</MenuItem>
         <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
       </Menu>
+
     </Box>
   );
 };

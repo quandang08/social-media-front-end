@@ -4,14 +4,13 @@ import HomePage from "./Components/HomePage/HomePage";
 import Authentication from "./Components/Authentication/Authentication";
 
 function App() {
-  const isAuthenticated = true;
 
   return (
     <div>
       <Routes>
         <Route
           path="/*"
-          element={isAuthenticated ? <HomePage /> : <Authentication />}
+          element={false ? <HomePage /> : <Authentication />}
         />
       </Routes>
     </div>

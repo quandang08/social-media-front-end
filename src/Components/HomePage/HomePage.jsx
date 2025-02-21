@@ -7,6 +7,7 @@ import { Navigate, Routes } from "react-router-dom";
 import Profile from "../Profile/Profile";
 import { Route } from "react-router-dom";
 import TwitDetails from "../TwitDetails/TwitDetails";
+import Authentication from "../Authentication/Authentication";
 
 const HomePage = () => {
   return (
@@ -46,6 +47,7 @@ const HomePage = () => {
         }}
       >
         <Routes>
+          <Route path="/" element={<Authentication />} />
           <Route path="/" element={<Navigate to="/home" replace />} />
           <Route path="/home" element={<HomeSection />} />
           <Route path="/profile/:id" element={<Profile />} />
