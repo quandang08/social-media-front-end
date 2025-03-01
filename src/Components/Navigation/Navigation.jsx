@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -8,17 +8,31 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
 import { navigation } from "./NavigationMenu";
+import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
+import { logout } from "../../Store/Auth/Action";
 
 const Navigation = () => {
+  const { auth } = useSelector((store) => store);
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
   const handleMenuClose = () => {
     setAnchorEl(null);
+  };
+  const dispatch = useDispatch();
+
+  const handleLogout = () => {
+    console.log("Logging out...");
+    dispatch(logout());
+   
   };
 
   return (
@@ -107,8 +121,6 @@ const Navigation = () => {
       >
         Post
       </Button>
-
-      {/* Profile Section */}
       {/* Profile Section */}
       <Box
         display="flex"
@@ -129,10 +141,13 @@ const Navigation = () => {
           />
           <Box>
             <Typography sx={{ fontSize: 15, fontWeight: "bold" }}>
-              Username
+              {auth.user?.fullname || "Guest"}
             </Typography>
             <Typography sx={{ fontSize: 13, color: "#aaa" }}>
-              @userhandle
+              @
+              {auth.user?.fullname
+                ? auth.user.fullname.split(" ").join("_").toLowerCase()
+                : "guest"}
             </Typography>
           </Box>
         </Box>
@@ -163,11 +178,8 @@ const Navigation = () => {
           },
         }}
       >
-        <MenuItem onClick={handleMenuClose}>Option 1</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Option 2</MenuItem>
-        <MenuItem onClick={handleMenuClose}>Logout</MenuItem>
+        <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
-
     </Box>
   );
 };
