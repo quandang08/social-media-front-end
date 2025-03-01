@@ -122,6 +122,7 @@ const Navigation = () => {
         Post
       </Button>
       {/* Profile Section */}
+      {/* Profile Section */}
       <Box
         display="flex"
         alignItems="center"
@@ -180,6 +181,7 @@ const Navigation = () => {
       >
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
+
     </Box>
   );
 };

@@ -47,9 +47,14 @@ const HomePage = () => {
         }}
       >
         <Routes>
+<<<<<<< HEAD
           <Route path="/" element={<Navigate to="/signup" replace />} />
           <Route path="/signup" element={<Authentication />} />
           <Route path="/signin" element={<Authentication />} />
+=======
+          <Route path="/" element={<Authentication />} />
+          <Route path="/" element={<Navigate to="/home" replace />} />
+>>>>>>> main
           <Route path="/home" element={<HomeSection />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/twit/:id" element={<TwitDetails />} />
