@@ -7,7 +7,7 @@ import {
   LOGIN_USER_SUCCESS,
   REGISTER_USER_FAILURE,
   REGISTER_USER_SUCCESS,
-  LOGOUT 
+  LOGOUT,
 } from "./ActionType";
 
 // Hàm lưu JWT vào localStorage
@@ -52,7 +52,6 @@ export const loginUser = (loginData) => async (dispatch) => {
       type: LOGIN_USER_SUCCESS,
       payload: { jwt: data.jwt, user: data.user || null },
     });
-
   } catch (error) {
     console.error("Login error:", error.response?.data || error);
 
@@ -63,16 +62,22 @@ export const loginUser = (loginData) => async (dispatch) => {
   }
 };
 
-
 // 🟢 Đăng ký
 export const registerUser = (registerData) => async (dispatch) => {
   try {
     // Kiểm tra dữ liệu đầu vào
-    if (!registerData?.email || !registerData?.password || !registerData?.fullName) {
+    if (
+      !registerData?.email ||
+      !registerData?.password ||
+      !registerData?.fullName
+    ) {
       throw new Error("Vui lòng điền đầy đủ thông tin");
     }
 
-    const { data } = await axios.post(`${API_BASE_URL}/auth/signup`, registerData);
+    const { data } = await axios.post(
+      `${API_BASE_URL}/auth/signup`,
+      registerData
+    );
     console.log("Register API Response:", data);
 
     // Kiểm tra JWT trong phản hồi
@@ -83,7 +88,6 @@ export const registerUser = (registerData) => async (dispatch) => {
     // Lưu JWT và dispatch thành công
     setJWT(data.jwt);
     dispatch({ type: REGISTER_USER_SUCCESS, payload: data });
-
   } catch (error) {
     console.error("Register error:", error);
 
@@ -120,7 +124,7 @@ export const getUserProfile = () => async (dispatch) => {
   }
 };
 
-export const logout = () => async (dispatch) => {
-    localStorage.removeItem("jwt");
-    dispatch({ type: LOGOUT }); 
+export const logout = () => (dispatch) => {
+  localStorage.removeItem("jwt");
+  dispatch({ type: "LOGOUT" });
 };

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -11,19 +11,18 @@ import { navigation } from "./NavigationMenu";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { logout } from "../../Store/Auth/Action";
+import { useNavigate } from "react-router-dom";
 
 const Navigation = () => {
   const { auth } = useSelector((store) => store);
-  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
 
+  const navigate = useNavigate();
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
@@ -32,9 +31,10 @@ const Navigation = () => {
   const handleLogout = () => {
     console.log("Logging out...");
     dispatch(logout());
-   
+    console.log("Auth state:", auth);
+    navigate("/signin");
   };
-
+  console.log("User data:", auth);
   return (
     <Box
       sx={{
@@ -121,7 +121,7 @@ const Navigation = () => {
       >
         Post
       </Button>
-      {/* Profile Section */}
+
       {/* Profile Section */}
       <Box
         display="flex"
@@ -142,13 +142,11 @@ const Navigation = () => {
           />
           <Box>
             <Typography sx={{ fontSize: 15, fontWeight: "bold" }}>
-              {auth.user?.fullname || "Guest"}
+              {auth.user?.fullName || "Amu"}
             </Typography>
             <Typography sx={{ fontSize: 13, color: "#aaa" }}>
               @
-              {auth.user?.fullname
-                ? auth.user.fullname.split(" ").join("_").toLowerCase()
-                : "guest"}
+              {auth.user?.fullName?.replace(/\s+/g, "_").toLowerCase() || "amu"}
             </Typography>
           </Box>
         </Box>
@@ -181,7 +179,6 @@ const Navigation = () => {
       >
         <MenuItem onClick={handleLogout}>Logout</MenuItem>
       </Menu>
-
     </Box>
   );
 };

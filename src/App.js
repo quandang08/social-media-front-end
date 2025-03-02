@@ -1,4 +1,4 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useNavigate } from "react-router-dom";
 import "./App.css";
 import HomePage from "./Components/HomePage/HomePage";
 import Authentication from "./Components/Authentication/Authentication";
@@ -13,6 +13,7 @@ function App() {
   useEffect(() => {
     if (jwt && !user) { 
       dispatch(getUserProfile(jwt));
+      
     }
   }, [jwt, user, dispatch]);
 

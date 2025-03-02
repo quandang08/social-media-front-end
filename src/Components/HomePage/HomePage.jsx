@@ -8,9 +8,11 @@ import Profile from "../Profile/Profile";
 import { Route } from "react-router-dom";
 import TwitDetails from "../TwitDetails/TwitDetails";
 import Authentication from "../Authentication/Authentication";
+import Auth from "../Auth/SigninFormV2";
 
 const HomePage = () => {
   return (
+    
     <Box
       display="flex"
       flexDirection={{ xs: "column", md: "row" }}
@@ -34,6 +36,7 @@ const HomePage = () => {
         }}
       >
         <Navigation />
+        
       </Box>
 
       {/* Middle Part */}
@@ -47,19 +50,15 @@ const HomePage = () => {
         }}
       >
         <Routes>
-<<<<<<< HEAD
-          <Route path="/" element={<Navigate to="/signup" replace />} />
-          <Route path="/signup" element={<Authentication />} />
+        {/* <Route path="/" element={<Navigate to="/signin" replace />} /> */}
           <Route path="/signin" element={<Authentication />} />
-=======
-          <Route path="/" element={<Authentication />} />
-          <Route path="/" element={<Navigate to="/home" replace />} />
->>>>>>> main
+          <Route path="/signup" element={<Authentication />} />
+
+          <Route path="/" element={<Navigate to="/signin" replace />} />
           <Route path="/home" element={<HomeSection />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/twit/:id" element={<TwitDetails />} />
         </Routes>
-
       </Box>
 
       {/* Right Part */}

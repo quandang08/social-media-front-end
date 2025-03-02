@@ -61,6 +61,7 @@ const Authentication = () => {
           <button onClick={handleOpenAuthModel} className="w-full border border-gray-300 py-3 rounded-full mt-3 text-lg hover:bg-gray-100 transition shadow">
             SIGN IN
           </button>
+          
         </div>
       </div>
       <AuthModal open={openAuthModel} handleClose={handleCloseAuthModel} />

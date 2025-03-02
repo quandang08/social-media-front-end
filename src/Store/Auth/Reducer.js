@@ -43,8 +43,8 @@ export const authReducer = (state = initialState, action) => {
         case GET_USER_PROFILE_FAILURE:
             return { ...state, loading: false, error: action.payload };
 
-        case LOGOUT: // ✅ Xử lý logout
-            return { ...initialState };
+        case LOGOUT: 
+        return initialState
 
         default:
             return state;
