@@ -1,5 +1,5 @@
 import axios from "axios";
-import { API_BASE_URL } from "../../config/api";
+import { api, API_BASE_URL } from "../../config/api";
 import {
   GET_USER_PROFILE_FAILURE,
   GET_USER_PROFILE_SUCCESS,
@@ -8,6 +8,11 @@ import {
   REGISTER_USER_FAILURE,
   REGISTER_USER_SUCCESS,
   LOGOUT,
+  FIND_USER_BY_ID_SUCCESS,
+  FOLLOW_USER_SUCCESS,
+  FOLLOW_USER_FAILURE,
+  UPDATE_USER_FAILURE,
+  UPDATE_USER_SUCCESS,
 } from "./ActionType";
 
 // Hàm lưu JWT vào localStorage
@@ -20,7 +25,7 @@ const setJWT = (jwt) => {
 // Hàm lấy JWT từ localStorage
 const getJWT = () => localStorage.getItem("jwt") || null;
 
-// Hàm xử lý lỗi chuẩn hơn
+// Hàm xử lý lỗi
 const getErrorMessage = (error) => {
   if (axios.isAxiosError(error)) {
     return error.response?.data?.message || "Lỗi từ server";
@@ -124,7 +129,57 @@ export const getUserProfile = () => async (dispatch) => {
   }
 };
 
+// 🟢 Tim User theo ID
+export const findUserById = (userId) => async (dispatch) => {
+  try {
+    const { data } = await api.get(`/api/users/${userId}`)
+    dispatch({ type: FIND_USER_BY_ID_SUCCESS, payload: data });
+
+  } catch (error) {
+    console.error("Search Id failure:", error);
+
+    dispatch({
+      type: GET_USER_PROFILE_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+};
+
+// 🟢 Thay đổi thông tin người dùng
+export const updateUserProfile = (reqData) => async (dispatch) => {
+  try {
+    const { data } = await api.put(`/api/users/update/`, reqData)
+    console.log("updated user", data);
+    dispatch({ type: UPDATE_USER_SUCCESS, payload: data });
+
+  } catch (error) {
+    console.error("error: ", error);
+
+    dispatch({
+      type: UPDATE_USER_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+};
+
+// 🟢 Theo dõi người dùng theo ID
+export const followUserAction = (userId) => async (dispatch) => {
+  try {
+    const { data } = await api.put(`/api/users/${userId}/follow`)
+    console.log("followed user", data);
+    dispatch({ type: FOLLOW_USER_SUCCESS, payload: data });
+
+  } catch (error) {
+    console.error("error: ", error);
+
+    dispatch({
+      type: FOLLOW_USER_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+}; 
+
 export const logout = () => (dispatch) => {
   localStorage.removeItem("jwt");
-  dispatch({ type: "LOGOUT" });
+  dispatch({ type: LOGOUT });
 };
