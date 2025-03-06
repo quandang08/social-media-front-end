@@ -63,9 +63,21 @@ import {
           twits: [action.payload, ...state.twits],
         };
   
-      case GET_ALL_TWEETS_SUCCESS:
-      case GET_USERS_TWEET_SUCCESS:
-        return { ...state, loading: false, error: null, twits: action.payload };
+        case GET_ALL_TWEETS_SUCCESS:
+          return { 
+            ...state, 
+            loading: false, 
+            error: null, 
+            twits: action.payload 
+          };
+        
+        case GET_USERS_TWEET_SUCCESS:
+          return { 
+            ...state, 
+            loading: false, 
+            error: null, 
+            userTwits: action.payload  // Nếu cần lưu bài đăng riêng của user
+          };
   
       case USER_LIKE_TWEET_SUCCESS:
         return { ...state, loading: false, error: null, likedTwits: action.payload };
