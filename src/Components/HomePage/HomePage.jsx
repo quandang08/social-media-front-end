@@ -8,7 +8,6 @@ import Profile from "../Profile/Profile";
 import { Route } from "react-router-dom";
 import TwitDetails from "../TwitDetails/TwitDetails";
 import Authentication from "../Authentication/Authentication";
-import Auth from "../Auth/SigninFormV2";
 
 const HomePage = () => {
   return (

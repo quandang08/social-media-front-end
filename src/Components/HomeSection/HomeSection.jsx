@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, Button, TextField, IconButton } from "@mui/material";
 import { FaImage, FaPoll, FaSmile, FaMapMarkerAlt } from "react-icons/fa";
 import Picker from "@emoji-mart/react";
@@ -6,6 +6,8 @@ import data from "@emoji-mart/data";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import TweetCard from "./TweetCard";
+import { useDispatch, useSelector } from "react-redux";
+import { getAllTweets } from "../../Store/Twit/Action";
 
 // Validation schema
 const validationSchema = Yup.object().shape({
@@ -32,7 +34,7 @@ const styles = {
   },
   form: {
     display: "flex",
-    flexDirection: "column", // Đây là giá trị hợp lệ cho flexDirection
+    flexDirection: "column",
     flexGrow: 1,
     gap: "10px",
   },
@@ -53,13 +55,27 @@ const styles = {
     marginTop: "20px",
   },
   tweetCard: {
-    marginTop: "20px", // Margin cho TweetCard
+    marginTop: "20px",
   },
 };
 
 const HomeSection = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const dispatch = useDispatch();
+  const { twit } = useSelector((store) => store);
+  console.log("twit", twit);
+  console.log("twit.twits:", twit?.twits);
+
+  // const handleSubmit = (values) => {
+  //   console.log("values", values);
+  // };
+
+  useEffect(() => {
+    dispatch(getAllTweets());
+  }, [dispatch]);
 
   const handleSelectImage = (event) => {
     const file = event.target.files?.[0];
@@ -88,8 +104,10 @@ const HomeSection = () => {
       content: "",
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: (values, { resetForm }) => {
       console.log("Form Submitted:", values, selectedImage);
+      resetForm();
+      setSelectedImage(null);
     },
   });
 
@@ -120,6 +138,7 @@ const HomeSection = () => {
               <img
                 src={selectedImage}
                 alt="Selected Preview"
+                onError={(e) => (e.target.style.display = "none")}
                 style={{ width: "100%", height: "auto" }}
               />
             </div>
@@ -186,10 +205,16 @@ const HomeSection = () => {
         </form>
       </div>
 
-      {/* TweetCard */}
-      <div style={styles.tweetCard}>
-        <TweetCard />
-      </div>
+      {/* TweetCard */} 
+      <section style={styles.tweetCard}>
+        {twit?.twits && twit.twits.length > 0 ? (
+          twit.twits.map((item) => (
+            <TweetCard key={item.id || item._id} item={item} />
+          ))
+        ) : (
+          <p>No tweets found.</p>
+        )}
+      </section>
     </div>
   );
 };

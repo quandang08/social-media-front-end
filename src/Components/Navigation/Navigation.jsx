@@ -19,13 +19,14 @@ const Navigation = () => {
   const open = Boolean(anchorEl);
 
   const navigate = useNavigate();
+
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
+
   const dispatch = useDispatch();
 
   const handleLogout = () => {
@@ -34,7 +35,7 @@ const Navigation = () => {
     console.log("Auth state:", auth);
     navigate("/signin");
   };
-  console.log("User data:", auth);
+
   return (
     <Box
       sx={{
@@ -130,7 +131,7 @@ const Navigation = () => {
         sx={{
           p: 2,
           mt: 1,
-          borderTop: "1px solid #e0e0e0", // Thêm để phân biệt các phần
+          borderTop: "1px solid #e0e0e0", 
         }}
       >
         {/* Avatar và Thông tin User */}
