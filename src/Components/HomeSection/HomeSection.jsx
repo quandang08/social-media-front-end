@@ -62,16 +62,10 @@ const styles = {
 const HomeSection = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
-  const [uploadingImage, setUploadingImage] = useState(false);
 
   const dispatch = useDispatch();
   const { twit } = useSelector((store) => store);
   console.log("twit", twit);
-  console.log("twit.twits:", twit?.twits);
-
-  // const handleSubmit = (values) => {
-  //   console.log("values", values);
-  // };
 
   useEffect(() => {
     dispatch(getAllTweets());
@@ -81,11 +75,7 @@ const HomeSection = () => {
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          setSelectedImage(reader.result);
-        }
-      };
+      reader.onload = () => setSelectedImage(reader.result);
       reader.readAsDataURL(file);
     }
   };
@@ -138,7 +128,7 @@ const HomeSection = () => {
               <img
                 src={selectedImage}
                 alt="Selected Preview"
-                onError={(e) => (e.target.style.display = "none")}
+                onError={(e) => (e.target.src = "logo512.png")}
                 style={{ width: "100%", height: "auto" }}
               />
             </div>
@@ -205,7 +195,7 @@ const HomeSection = () => {
         </form>
       </div>
 
-      {/* TweetCard */} 
+      {/* TweetCard */}
       <section style={styles.tweetCard}>
         {twit?.twits && twit.twits.length > 0 ? (
           twit.twits.map((item) => (
