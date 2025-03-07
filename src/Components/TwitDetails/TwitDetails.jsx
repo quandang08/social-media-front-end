@@ -11,7 +11,7 @@ const TwitDetails = () => {
 
   return (
     <React.Fragment>
-      <section className="{`bg-white z-50 flex items-center sticky top-0 bg-opacity-95`}">
+      <section className="bg-white z-50 flex items-center sticky top-0 bg-opacity-95">
         <KeyboardBackspaceIcon
           className="cursor-pointer"
           onClick={handleBack}
@@ -21,11 +21,13 @@ const TwitDetails = () => {
         </h1>
       </section>
       <section>
-        <TweetCard/>
-        <Divider sx={{margin:"2rem 0rem", }}/>
+        <TweetCard />
+        <Divider sx={{ margin: "2rem 0rem", }} />
       </section>
       <section>
-        {[1,1,1,1].map((item)=><TweetCard key={item}/>)}
+        {[1, 2, 3, 4].map((item) => (
+          <TweetCard key={item} />
+        ))}
       </section>
     </React.Fragment>
   );
