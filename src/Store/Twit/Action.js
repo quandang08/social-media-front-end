@@ -80,11 +80,14 @@ export const createTweetReply = (tweetData) => async (dispatch) => {
     const { data } = await api.post(`/api/twits/reply`, tweetData);
     console.log("reply tweet: ", data);
     dispatch({ type: REPLY_TWEET_SUCCESS, payload: data });
+    return data;
   } catch (error) {
     console.log("catch error: ", error);
     dispatch({ type: REPLY_TWEET_FAILURE, payload: error.message });
+    return null;
   }
 };
+
 
 export const createReTweet = (twitId) => async (dispatch) => {
   try {

@@ -135,7 +135,7 @@ const tweetReducer = (state = initialState, action) => {
         error: null,
         twits: state.twits.map((twit) =>
           twit._id === action.payload.parentId
-            ? { ...twit, replies: [...twit.replies, action.payload] }
+            ? { ...twit, replies: [...(twit.replies || []), action.payload] }
             : twit
         ),
       };

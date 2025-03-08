@@ -11,3 +11,4 @@ const rootReducers = combineReducers({
 // ✅ Tạo store với middleware thunk
 export const store = legacy_createStore(rootReducers,applyMiddleware(thunk)); 
 
+
