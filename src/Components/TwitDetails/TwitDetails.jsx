@@ -1,13 +1,27 @@
-import React from "react";
+import React, { useEffect } from "react";
 import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import { useNavigate } from "react-router-dom";
-import TweetCard from '../HomeSection/TweetCard';
+import { useNavigate, useParams } from "react-router-dom";
+import TweetCard from "../HomeSection/TweetCard";
 import { Divider } from "@mui/material";
+
+import { findTwitsById } from "../../Store/Twit/Action";
+import { useDispatch, useSelector } from "react-redux";
 
 const TwitDetails = () => {
   const navigate = useNavigate();
-
   const handleBack = () => navigate(-1);
+  const dispatch = useDispatch();
+
+  const { id } = useParams();
+  const twit = useSelector((store) => store.twit) || {
+    twit: { replyTwits: [] },
+  };
+
+  useEffect(() => {
+    if (id) {
+      dispatch(findTwitsById(id));
+    }
+  }, [id, dispatch]);
 
   return (
     <React.Fragment>
@@ -21,13 +35,22 @@ const TwitDetails = () => {
         </h1>
       </section>
       <section>
-        <TweetCard />
-        <Divider sx={{ margin: "2rem 0rem", }} />
+        <TweetCard item={twit.twit} />
+        <Divider sx={{ margin: "2rem 0rem" }} />
       </section>
+
       <section>
-        {[1, 2, 3, 4].map((item) => (
-          <TweetCard key={item} />
-        ))}
+        {twit?.twit ? (
+          <>
+            <TweetCard item={twit.twit} />
+            <Divider sx={{ margin: "2rem 0rem" }} />
+            {twit.twit.replyTwits?.map((item, index) => (
+              <TweetCard key={index} item={item} />
+            ))}
+          </>
+        ) : (
+          <p>Loading...</p>
+        )}
       </section>
     </React.Fragment>
   );
