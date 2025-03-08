@@ -21,27 +21,29 @@ const TweetCard = ({ item }) => {
   const [anchorEl, setAnchorEl] = useState(null);
   const [openReplyModal, setOpenReplyModal] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(item.totalLikes);
+  const [likeCount, setLikeCount] = useState(item?.totalLikes || 0);
 
   const [isRetweeted, setIsRetweeted] = useState(false);
-  const [retweetCount, setRetweetCount] = useState(item.totalRetweets);
+  const [retweetCount, setRetweetCount] = useState(item?.totalRetweets || 0);
 
+  const [tweet, setTweet] = useState(item);
   // Cập nhật isLiked mỗi khi item thay đổi
   useEffect(() => {
+    if (!item) return;
     setIsLiked(
       Array.isArray(item.liked) && item.liked.includes(currentUser?.id)
     );
-    setLikeCount(item.totalLikes);
+    setLikeCount(item?.totalLikes || 0);
   }, [item, currentUser]);
 
   //use Efferct Retweet
   useEffect(() => {
-    console.log("retwitUserId:", item.retwitUserId);
+    if (!item) return;
     setIsRetweeted(
       Array.isArray(item.retwitUserId) &&
         item.retwitUserId.includes(currentUser?.id)
     );
-    setRetweetCount(item.totalRetweets);
+    setRetweetCount(item?.totalRetweets || 0);
   }, [item, currentUser]);
 
   const handleLikeTweet = async () => {
@@ -79,7 +81,7 @@ const TweetCard = ({ item }) => {
   return (
     <div className="flex space-x-5 mb-6 border-b pb-4">
       <Avatar
-        onClick={() => navigate(`/profile/${item?.userId}`)}
+        onClick={() => navigate(`/profile/${item?.user.id}`)}
         className="cursor-pointer"
         alt="User"
         src={
@@ -91,13 +93,13 @@ const TweetCard = ({ item }) => {
       <div className="w-full max-h-[500px] overflow-hidden">
         <div className="flex items-center gap-2">
           <span className="font-semibold">
-            {item.user.fullName || "Unknown"}
+            {item?.user?.fullName || "Unknown"}
           </span>
           <span className="text-gray-600 text-sm">
             @
-            {item.user.fullName
-              ? item.user.fullName.split("").join("_").toLowerCase()
-              : "Unknown"}{" "}
+            {item?.user?.fullName
+              ? item?.user?.fullName.replace(/\s+/g, "_").toLowerCase()
+              : "unknown"}{" "}
             · 2m
           </span>
 
@@ -147,10 +149,12 @@ const TweetCard = ({ item }) => {
                 fontSize="small"
                 onClick={() => setOpenReplyModal(true)}
               />
-              <span className="text-gray-500 text-sm">{item.totalReplies}</span>
+              <span className="text-gray-500 text-sm">
+                {item?.totalReplies}
+              </span>
             </div>
 
-            {/* Icon Like - Nếu thích thì hiển thị trái tim đỏ, không thích thì trái tim rỗng */}
+            {/* Icon Like */}
             <div
               className="flex items-center space-x-1 cursor-pointer"
               onClick={handleLikeTweet}
@@ -207,8 +211,15 @@ const TweetCard = ({ item }) => {
       </div>
 
       <ReplyModal
+        item={tweet}
         open={openReplyModal}
         handleClose={() => setOpenReplyModal(false)}
+        onReplySuccess={() => {
+          setTweet((prev) => ({
+            ...prev,
+            totalReplies: (prev.totalReplies || 0) + 1,
+          }));
+        }}
       />
     </div>
   );
