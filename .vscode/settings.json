@@ -4,5 +4,8 @@
     },
     "cSpell.enabledSchemes": {
         "file": false
+    },
+    "files.associations": {
+    "*.jsx": "javascriptreact"
     }
 }

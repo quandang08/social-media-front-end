@@ -42,8 +42,6 @@ const TwitDetails = () => {
       <section>
         {twit?.twit ? (
           <>
-            <TweetCard item={twit.twit} />
-            <Divider sx={{ margin: "2rem 0rem" }} />
             {twit.twit.replyTwits?.map((item, index) => (
               <TweetCard key={index} item={item} />
             ))}
