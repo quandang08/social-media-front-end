@@ -70,8 +70,7 @@ export const authReducer = (state = initialState, action) => {
             error: null,
             findUser: action.payload,
         };
-      
-    
+        
     case LOGIN_USER_FAILURE:
     case REGISTER_USER_FAILURE:
     case GET_USER_PROFILE_FAILURE:

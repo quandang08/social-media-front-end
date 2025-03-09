@@ -133,6 +133,7 @@ export const getUserProfile = () => async (dispatch) => {
 export const findUserById = (userId) => async (dispatch) => {
   try {
     const { data } = await api.get(`/api/users/${userId}`)
+    console.log("find user id: ",data);
     dispatch({ type: FIND_USER_BY_ID_SUCCESS, payload: data });
 
   } catch (error) {

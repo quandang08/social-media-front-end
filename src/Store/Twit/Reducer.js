@@ -76,7 +76,7 @@ const tweetReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: null,
-        userTwits: action.payload, // Nếu cần lưu bài đăng riêng của user
+        userTwits: action.payload,
       };
 
     case USER_LIKE_TWEET_SUCCESS:
@@ -87,8 +87,6 @@ const tweetReducer = (state = initialState, action) => {
         likedTwits: action.payload,
       };
 
-    // case LIKE_TWEET_SUCCESS:
-    //   return { ...state, loading: false, error: null, like: action.payload };
     case LIKE_TWEET_SUCCESS:
       return {
         ...state,
@@ -127,7 +125,8 @@ const tweetReducer = (state = initialState, action) => {
 
     case FIND_TWEET_BY_ID_SUCCESS:
       return { ...state, loading: false, error: null, twit: action.payload };
-
+    
+    
     case REPLY_TWEET_SUCCESS:
       return {
         ...state,

@@ -7,112 +7,95 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import TweetCard from "./TweetCard";
 import { useDispatch, useSelector } from "react-redux";
-import { getAllTweets } from "../../Store/Twit/Action";
+import { createTweet, getAllTweets } from "../../Store/Twit/Action";
+import { uploadToCloudinary } from "../../Utils/uploadToCloudnary";
 
-// Validation schema
 const validationSchema = Yup.object().shape({
   content: Yup.string().required("Tweet text is required"),
 });
 
-// Styles
-const styles = {
-  container: {
-    maxWidth: 800,
-    margin: "0 auto",
-    padding: 0,
-    marginTop: 0,
-  },
-  postBox: {
-    display: "flex",
-    gap: "20px",
-    padding: "20px",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
-    backgroundColor: "#fff",
-    marginTop: 25,
-  },
-  form: {
-    display: "flex",
-    flexDirection: "column",
-    flexGrow: 1,
-    gap: "10px",
-  },
-  imagePreview: {
-    marginTop: "10px",
-    border: "1px solid #ddd",
-    borderRadius: "10px",
-    overflow: "hidden",
-    maxHeight: "200px",
-    maxWidth: "100%",
-  },
-  actionRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginTop: "10px",
-  },
-  emojiPicker: {
-    marginTop: "20px",
-  },
-  tweetCard: {
-    marginTop: "20px",
-  },
-};
-
 const HomeSection = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const dispatch = useDispatch();
   const { twit } = useSelector((store) => store);
-  console.log("twit", twit);
 
   useEffect(() => {
     dispatch(getAllTweets());
   }, [dispatch]);
 
-  const handleSelectImage = (event) => {
+  const handleSelectImage = async (event) => {
     const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setSelectedImage(reader.result);
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    setUploadingImage(true);
+
+    // Preview ảnh
+    const reader = new FileReader();
+    reader.onload = () => setSelectedImage(reader.result);
+    reader.readAsDataURL(file);
+
+    // Upload ảnh
+    try {
+      const imgUrl = await uploadToCloudinary(file);
+      formik.setFieldValue("image", imgUrl);
+    } catch (error) {
+      console.error("Upload error:", error);
     }
+    setUploadingImage(false);
   };
 
   const handleEmojiSelect = (emoji) => {
     formik.setFieldValue("content", formik.values.content + emoji.native);
     setShowEmojiPicker(false);
   };
-
-  const handleAddLocation = () => {
-    console.log("Add location clicked!");
-  };
+  const handleSubmit = (values) => {
+    dispatch(createTweet(values))
+    console.log("values", values);
+  }
 
   const formik = useFormik({
-    initialValues: {
-      content: "",
-    },
+    initialValues: { content: "" },
     validationSchema,
     onSubmit: (values, { resetForm }) => {
-      console.log("Form Submitted:", values, selectedImage);
+      handleSubmit(values);
       resetForm();
       setSelectedImage(null);
     },
   });
 
   return (
-    <div style={styles.container}>
+    <div style={{ maxWidth: 800, margin: "0 auto", marginTop: 0 }}>
       {/* Post Box */}
-      <div style={styles.postBox}>
+      <div
+        style={{
+          display: "flex",
+          gap: "20px",
+          padding: "20px",
+          border: "1px solid #ddd",
+          borderRadius: "10px",
+          boxShadow: "0 2px 5px rgba(0,0,0,0.1)",
+          backgroundColor: "#fff",
+          marginTop: 25,
+        }}
+      >
         <Avatar src="https://i.pravatar.cc/100" alt="username" />
-        <form onSubmit={formik.handleSubmit} style={styles.form}>
+        <form
+          onSubmit={formik.handleSubmit}
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            flexGrow: 1,
+            gap: "10px",
+          }}
+        >
           <TextField
             variant="standard"
             placeholder="What is happening?"
             sx={{
               fontSize: "18px",
-              padding: 0,
               "& .MuiInputBase-root": { padding: "0px" },
               "& .MuiInput-underline:before": { borderBottom: "none" },
             }}
@@ -124,18 +107,40 @@ const HomeSection = () => {
 
           {/* Image Preview */}
           {selectedImage && (
-            <div style={styles.imagePreview}>
+            <div
+              style={{
+                marginTop: "10px",
+                border: "1px solid #ddd",
+                borderRadius: "10px",
+                overflow: "hidden",
+                maxWidth: "100%",
+                maxHeight: "400px",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: "#000", 
+              }}
+            > 
               <img
                 src={selectedImage}
-                alt="Selected Preview"
-                onError={(e) => (e.target.src = "logo512.png")}
-                style={{ width: "100%", height: "auto" }}
+                alt="Preview"
+                style={{
+                  maxWidth: "100%",
+                  maxHeight: "100%",
+                  objectFit: "contain",
+                }}
               />
             </div>
           )}
 
           {/* Action Row */}
-          <div style={styles.actionRow}>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "10px",
+            }}
+          >
             <div style={{ display: "flex", gap: "10px" }}>
               <IconButton style={{ color: "#007bff" }} component="label">
                 <FaImage size={20} />
@@ -160,7 +165,7 @@ const HomeSection = () => {
 
               <IconButton
                 style={{ color: "#007bff" }}
-                onClick={handleAddLocation}
+                onClick={() => console.log("Add location clicked!")}
               >
                 <FaMapMarkerAlt size={20} />
               </IconButton>
@@ -170,7 +175,9 @@ const HomeSection = () => {
               type="submit"
               variant="contained"
               disabled={
-                !formik.values.content || Boolean(formik.errors.content)
+                !formik.values.content ||
+                Boolean(formik.errors.content) ||
+                uploadingImage
               }
               style={{
                 textTransform: "uppercase",
@@ -182,22 +189,20 @@ const HomeSection = () => {
                 borderRadius: "5px",
               }}
             >
-              Post
+              {uploadingImage ? "Uploading..." : "Post"}
             </Button>
           </div>
 
           {/* Emoji Picker */}
           {showEmojiPicker && (
-            <div style={styles.emojiPicker}>
-              <Picker data={data} onEmojiSelect={handleEmojiSelect} />
-            </div>
+            <Picker data={data} onEmojiSelect={handleEmojiSelect} />
           )}
         </form>
       </div>
 
       {/* TweetCard */}
-      <section style={styles.tweetCard}>
-        {twit?.twits && twit.twits.length > 0 ? (
+      <section style={{ marginTop: "20px" }}>
+        {twit?.twits?.length > 0 ? (
           twit.twits.map((item) => (
             <TweetCard key={item.id || item._id} item={item} />
           ))
