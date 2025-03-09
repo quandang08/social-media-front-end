@@ -1,72 +1,89 @@
-// ProfileModal.js
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Modal from '@mui/material/Modal';
-import Button from '@mui/material/Button';
-import { useFormik } from 'formik';
-import TextField from '@mui/material/TextField';
-import SaveIcon from '@mui/icons-material/Save';
-import * as Yup from 'yup';
-import './ProfileModal.css';
+import * as React from "react";
+import Box from "@mui/material/Box";
+import Modal from "@mui/material/Modal";
+import Button from "@mui/material/Button";
+import { useFormik } from "formik";
+import TextField from "@mui/material/TextField";
+import SaveIcon from "@mui/icons-material/Save";
+import * as Yup from "yup";
+import "./ProfileModal.css";
+import { useDispatch } from "react-redux";
+import { updateUserProfile } from "../../Store/Auth/Action";
+import { uploadToCloudinary } from "../../Utils/uploadToCloudnary";
 
 const style = {
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
   width: 500,
-  bgcolor: 'background.paper',
+  bgcolor: "background.paper",
   boxShadow: 24,
-  outline: 'none',
+  outline: "none",
   p: 4,
-  maxHeight: '90vh',
-  overflowY: 'auto',
+  maxHeight: "90vh",
+  overflowY: "auto",
   borderRadius: 3,
 };
 
 const ProfileModal = ({ open, handleClose }) => {
+  const dispatch = useDispatch()
+
   const formik = useFormik({
     initialValues: {
-      fullname: '',
-      website: '',
-      location: '',
-      bio: '',
-      backgroundImage: '',
+      fullname: "",
+      website: "",
+      location: "",
+      bio: "",
+      backgroundImage: "",
+      avatar: "",
     },
     validationSchema: Yup.object({
-      fullname: Yup.string().required('Fullname is required'),
-      website: Yup.string().url('Invalid URL format'),
-      bio: Yup.string().max(150, 'Bio should not exceed 150 characters'),
+      fullname: Yup.string().required("Fullname is required"),
+      website: Yup.string().url("Invalid URL format"),
+      bio: Yup.string().max(150, "Bio should not exceed 150 characters"),
     }),
     onSubmit: (values) => {
-      console.log('Form Values:', values);
+      console.log("Form Values:", values);
+      dispatch(updateUserProfile(values));
       handleClose();
-      alert('Profile updated successfully!');
+      alert("Profile updated successfully!");
     },
   });
 
-  const handleImageChange = (event) => {
+  const handleImageChange = (event, field) => {
+    // const file = await uploadToCloudinary(event.target.files[0]);
     const file = event.target?.files?.[0];
     if (file) {
-      if (!file.type.startsWith('image/')) {
-        alert('Please upload a valid image file.');
+      if (!file.type.startsWith("image/")) {
+        alert("Please upload a valid image file.");
         return;
       }
       const reader = new FileReader();
       reader.onload = () => {
-        formik.setFieldValue('backgroundImage', reader.result);
+        formik.setFieldValue(field, reader.result);
       };
       reader.readAsDataURL(file);
     }
   };
 
   return (
-    <Modal open={open} onClose={handleClose} aria-labelledby="profile-modal-title">
+    <Modal
+      open={open}
+      onClose={handleClose}
+      aria-labelledby="profile-modal-title"
+    >
       <Box sx={style}>
         <form onSubmit={formik.handleSubmit}>
           <div className="flex justify-between items-center">
             <h2 className="font-bold">Edit Profile</h2>
-            <Button type="submit" variant="contained" color="primary" startIcon={<SaveIcon />} className="text-sm font-bold rounded-md">
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              startIcon={<SaveIcon />}
+              className="text-sm font-bold rounded-md"
+            >
               Save
             </Button>
           </div>
@@ -74,14 +91,46 @@ const ProfileModal = ({ open, handleClose }) => {
           <div className="mt-4 relative">
             <img
               className="w-full h-[12rem] object-cover object-center"
-              src={formik.values.backgroundImage || 'https://cdn.pixabay.com/photo/2023/07/17/09/25/tree-8132250_1280.jpg'}
+              src={
+                formik.values.backgroundImage ||
+                "https://cdn.pixabay.com/photo/2023/07/17/09/25/tree-8132250_1280.jpg"
+              }
               alt="Background"
             />
-
-            <input type="file" accept="image/*" className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer" onChange={handleImageChange} />
+            <input
+              type="file"
+              accept="image/*"
+              className="absolute top-0 left-0 w-full h-full opacity-0 cursor-pointer"
+              onChange={(e) => handleImageChange(e, "backgroundImage")}
+            />
           </div>
 
-          <Box mt={4} sx={{ maxHeight: '70vh', display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <div className="relative flex justify-center mt-[-50px] ml-[-270px]">
+            <img
+              className="w-24 h-24 rounded-full border-4 border-white shadow-md"
+              src={
+                formik.values.avatar ||
+                "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+              }
+              alt="Avatar"
+            />
+            <input
+              type="file"
+              accept="image/*"
+              className="absolute w-50 h-50 opacity-0 cursor-pointer"
+              onChange={(e) => handleImageChange(e, "avatar")}
+            />
+          </div>
+
+          <Box
+            mt={4}
+            sx={{
+              maxHeight: "70vh",
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
+          >
             <div>
               <label htmlFor="fullname">Fullname</label>
               <TextField
@@ -91,7 +140,9 @@ const ProfileModal = ({ open, handleClose }) => {
                 variant="outlined"
                 value={formik.values.fullname}
                 onChange={formik.handleChange}
-                error={formik.touched.fullname && Boolean(formik.errors.fullname)}
+                error={
+                  formik.touched.fullname && Boolean(formik.errors.fullname)
+                }
                 helperText={formik.touched.fullname && formik.errors.fullname}
                 fullWidth
                 margin="normal"

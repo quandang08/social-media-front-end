@@ -64,13 +64,18 @@ const Navigation = () => {
         </Box>
 
         {navigation.map((item, index) => (
-          <Link
-            to={item.path}
+          <Box
             key={index}
+            onClick={() =>
+              item.title === "Profile"
+                ? navigate(`/profile/${auth?.user?.id || "default"}`)
+                : navigate(item.path)
+            }
             style={{
               textDecoration: "none",
               display: "block",
               marginBottom: 8,
+              cursor: "pointer",
             }}
           >
             <Box
@@ -99,7 +104,7 @@ const Navigation = () => {
                 {item.title}
               </Typography>
             </Box>
-          </Link>
+          </Box>
         ))}
       </Box>
 
@@ -131,7 +136,7 @@ const Navigation = () => {
         sx={{
           p: 2,
           mt: 1,
-          borderTop: "1px solid #e0e0e0", 
+          borderTop: "1px solid #e0e0e0",
         }}
       >
         {/* Avatar và Thông tin User */}
@@ -139,15 +144,19 @@ const Navigation = () => {
           <Avatar
             alt="User"
             src="user-avatar.jpg"
-            sx={{ width: 40, height: 40 }}
+            sx={{ width: 40, height: 40, cursor: "pointer" }}
+            onClick={() =>
+              auth?.user?.id && navigate(`/profile/${auth.user.id}`)
+            }
           />
+
           <Box>
             <Typography sx={{ fontSize: 15, fontWeight: "bold" }}>
               {auth.user?.fullName || "Amu"}
             </Typography>
             <Typography sx={{ fontSize: 13, color: "#aaa" }}>
               @
-              {auth.user?.fullName?.replace(/\s+/g, "_").toLowerCase() || "amu"}
+              {auth.user?.email?.replace(/\s+/g, "_").toLowerCase() || "amu"}
             </Typography>
           </Box>
         </Box>
