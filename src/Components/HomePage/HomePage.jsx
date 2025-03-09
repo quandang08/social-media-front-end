@@ -7,11 +7,15 @@ import { Navigate, Routes } from "react-router-dom";
 import Profile from "../Profile/Profile";
 import { Route } from "react-router-dom";
 import TwitDetails from "../TwitDetails/TwitDetails";
-import Authentication from "../Authentication/Authentication";
+import Notifications from "../Notifications/Notifications";
+import Explore from "../Explore/Explore";
+import Messages from "../Messages/Messages";
+import Lists from "../Lists/Lists"
+import Communities from "../Communities/Communities"
+import Verified from "../Verified/Verified"
 
 const HomePage = () => {
   return (
-    
     <Box
       display="flex"
       flexDirection={{ xs: "column", md: "row" }}
@@ -35,7 +39,6 @@ const HomePage = () => {
         }}
       >
         <Navigation />
-        
       </Box>
 
       {/* Middle Part */}
@@ -48,13 +51,15 @@ const HomePage = () => {
           overflowY: "auto",
         }}
       >
-        <Routes>
         {/* <Route path="/" element={<Navigate to="/signin" replace />} /> */}
-          <Route path="/signin" element={<Authentication />} />
-          <Route path="/signup" element={<Authentication />} />
-
-          <Route path="/" element={<Navigate to="/signin" replace />} />
+        <Routes>
           <Route path="/home" element={<HomeSection />} />
+          <Route path="/explore" element={<Explore />} />
+          <Route path="/notifications" element={<Notifications />} />
+          <Route path="/messages" element={<Messages />} />
+          <Route path="/lists" element={<Lists />} />
+          <Route path="/communities" element={<Communities />} />
+          <Route path="/verified" element={<Verified />} /> 
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/twit/:id" element={<TwitDetails />} />
         </Routes>
