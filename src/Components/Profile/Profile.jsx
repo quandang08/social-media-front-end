@@ -8,56 +8,50 @@ import { TabContext, TabList, TabPanel } from "@mui/lab";
 import TweetCard from "../HomeSection/TweetCard";
 import ProfileModal from "./ProfileModal";
 import { useDispatch, useSelector } from "react-redux";
-import { findUserById } from "../../Store/Auth/Action";
+import { findUserById, followUserAction } from "../../Store/Auth/Action";
 
 const Profile = () => {
   const { id } = useParams();
   const [tabValue, setTabValue] = useState("1");
   const navigate = useNavigate();
   const [openProfileModal, setOpenProfileModal] = useState(false);
-  const handleBack = () => navigate(-1);
-  const auth = useSelector((store) => store.auth) || {};
-  const isCurrentUser = auth?.user?.id?.toString() === id?.toString();
-
+  const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
-  const handleOpenProfileModal = () => {
-    console.log("Opening profile modal");
-    setOpenProfileModal(true);
-  };
-  const handleCloseProfileModal = () => setOpenProfileModal(false);
-  const handleFollowUser = () => console.log("follow user");
+  const auth = useSelector((store) => store.auth) || {};
+  const isCurrentUser = auth?.user?.id?.toString() === id?.toString();
+  const followingCount = auth.findUser?.following?.length || 0;
+  const followersCount = auth.findUser?.followers?.length || 0;
 
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue);
-    console.log(`Selected Tab: ${newValue}`);
+  const handleBack = () => navigate(-1);
+  const handleOpenProfileModal = () => setOpenProfileModal(true);
+  const handleCloseProfileModal = () => setOpenProfileModal(false);
+  const handleTabChange = (event, newValue) => setTabValue(newValue);
+
+  const handleFollowUser = async () => {
+    try {
+      await dispatch(followUserAction(id));
+      // Không cần fetch lại findUserById(id) vì useEffect sẽ lo việc đó
+    } catch (error) {
+      console.error("Follow user failed", error);
+    }
   };
 
   useEffect(() => {
     if (id) {
-      dispatch(findUserById(id));
-      console.log("Fetching user with ID:", id);
+      setLoading(true);
+      dispatch(findUserById(id)).finally(() => setLoading(false));
     }
   }, [id, dispatch]);
-
-  useEffect(() => {
-    console.log("User data:", auth.findUser);
-  }, [auth.findUser]);
-
-  // console.log("Auth user:", auth?.user);
-  // console.log("Find user:", auth?.findUser);
-  // console.log("Param ID:", id);
-  // console.log("isCurrentUser:", isCurrentUser);
 
   return (
     <div>
       {/* Header Section */}
       <div className="sticky-header flex items-center px-4">
-        <KeyboardBackspaceIcon
-          className="cursor-pointer"
-          onClick={handleBack}
-        />
-        <h1 className="py-5 text-xl font-bold ml-5">{auth.findUser?.fullName}</h1>
+        <KeyboardBackspaceIcon className="cursor-pointer" onClick={handleBack} />
+        <h1 className="py-5 text-xl font-bold ml-5">
+          {loading ? "Loading..." : auth.findUser?.fullName}
+        </h1>
       </div>
 
       {/* Cover Section */}
@@ -74,25 +68,17 @@ const Profile = () => {
         <div className="flex justify-between items-start mt-5 h-[5rem]">
           <Avatar
             className="transform -translate-y-24"
-            alt="code with amu"
-            src=""
+            alt={auth.findUser?.fullName}
+            src={auth.findUser?.avatar || ""}
             sx={{ width: "10rem", height: "10rem", border: "4px solid white" }}
           />
           {isCurrentUser ? (
-            <Button
-              onClick={handleOpenProfileModal}
-              variant="contained"
-              sx={{ borderRadius: "20px" }}
-            >
+            <Button onClick={handleOpenProfileModal} variant="contained" sx={{ borderRadius: "20px" }}>
               Edit Profile
             </Button>
           ) : (
-            <Button
-              onClick={handleFollowUser}
-              variant="contained"
-              sx={{ borderRadius: "20px" }}
-            >
-              {auth?.user?.following?.includes(id) ? "Unfollow" : "Follow"}
+            <Button onClick={handleFollowUser} variant="contained" sx={{ borderRadius: "20px" }}>
+              {auth?.user?.following?.includes(Number(id)) ? "Unfollow" : "Follow"}
             </Button>
           )}
         </div>
@@ -100,7 +86,7 @@ const Profile = () => {
         <div className="">
           <div className="flex items-center">
             <h1 className="font-bold text-lg">{auth.findUser?.fullName}</h1>
-            {true && (
+            {auth.findUser?.isVerified && (
               <img
                 className="ml-2 w-5 h-5"
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Twitter_Verified_Badge.svg/1200px-Twitter_Verified_Badge.svg.png"
@@ -114,7 +100,7 @@ const Profile = () => {
         </div>
 
         <div className="mt-2 space-y-3">
-          <p>Hello, I am Amu. Nice to meet you and I am a Java Developer!</p>
+          <p>{auth.findUser?.bio || "Hello, I am a Java Developer!"}</p>
           <div className="py-1 flex space-x-5">
             <div className="flex items-center text-gray-500">
               <BusinessCenterIcon />
@@ -134,12 +120,12 @@ const Profile = () => {
 
           <div className="py-1 flex space-x-5">
             <div className="flex items-center space-x-1 font-semibold">
-              <span>200</span>
+              <span>{followingCount}</span>
               <span className="text-gray-500">Following</span>
             </div>
 
             <div className="flex items-center space-x-1 font-semibold">
-              <span>590</span>
+              <span>{followersCount}</span>
               <span className="text-gray-500">Followers</span>
             </div>
           </div>
@@ -151,10 +137,7 @@ const Profile = () => {
         <Box sx={{ width: "100%", typography: "body1" }}>
           <TabContext value={tabValue}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList
-                onChange={handleTabChange}
-                aria-label="lab API tabs example"
-              >
+              <TabList onChange={handleTabChange} aria-label="lab API tabs example">
                 <Tab label="Tweets" value="1" />
                 <Tab label="Replies" value="2" />
                 <Tab label="Media" value="3" />
@@ -162,11 +145,13 @@ const Profile = () => {
               </TabList>
             </Box>
             <TabPanel value="1">
-              {[1, 2, 3, 4].map((item) => (
-                <TweetCard key={item} />
-              ))}
+              {auth.findUser?.tweets?.length ? (
+                auth.findUser.tweets.map((tweet) => <TweetCard key={tweet.id} tweet={tweet} />)
+              ) : (
+                <p>No tweets yet</p>
+              )}
             </TabPanel>
-            <TabPanel value="2">user replies</TabPanel>
+            <TabPanel value="2">User replies</TabPanel>
             <TabPanel value="3">Media</TabPanel>
             <TabPanel value="4">Likes</TabPanel>
           </TabContext>
@@ -174,12 +159,7 @@ const Profile = () => {
       </section>
 
       {/* Profile Modal Section */}
-      <section>
-        <ProfileModal
-          open={openProfileModal}
-          handleClose={handleCloseProfileModal}
-        />
-      </section>
+      <ProfileModal open={openProfileModal} handleClose={handleCloseProfileModal} />
     </div>
   );
 };
