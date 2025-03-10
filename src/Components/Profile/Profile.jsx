@@ -9,6 +9,7 @@ import TweetCard from "../HomeSection/TweetCard";
 import ProfileModal from "./ProfileModal";
 import { useDispatch, useSelector } from "react-redux";
 import { findUserById, followUserAction } from "../../Store/Auth/Action";
+import { getUsersTweets } from "../../Store/Twit/Action";
 
 const Profile = () => {
   const { id } = useParams();
@@ -18,7 +19,11 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
   const dispatch = useDispatch();
 
-  const auth = useSelector((store) => store.auth) || {};
+  const { auth, twit } = useSelector((store) => ({
+    auth: store.auth,
+    twit: store.twit,
+  }));
+
   const isCurrentUser = auth?.user?.id?.toString() === id?.toString();
   const followingCount = auth.findUser?.following?.length || 0;
   const followersCount = auth.findUser?.followers?.length || 0;
@@ -31,22 +36,24 @@ const Profile = () => {
   const handleFollowUser = async () => {
     try {
       await dispatch(followUserAction(id));
-  
+
       // Cập nhật Redux ngay lập tức để giao diện đổi từ Follow -> Unfollow
       dispatch({
         type: "UPDATE_FOLLOWING",
         payload: id,
       });
-
     } catch (error) {
       console.error("Follow user failed", error);
     }
-  };  
+  };
 
   useEffect(() => {
     if (id) {
       setLoading(true);
-      dispatch(findUserById(id)).finally(() => setLoading(false));
+      Promise.all([
+        dispatch(findUserById(id)),
+        dispatch(getUsersTweets(id)),
+      ]).finally(() => setLoading(false));
     }
   }, [id, dispatch]);
 
@@ -54,7 +61,10 @@ const Profile = () => {
     <div>
       {/* Header Section */}
       <div className="sticky-header flex items-center px-4">
-        <KeyboardBackspaceIcon className="cursor-pointer" onClick={handleBack} />
+        <KeyboardBackspaceIcon
+          className="cursor-pointer"
+          onClick={handleBack}
+        />
         <h1 className="py-5 text-xl font-bold ml-5">
           {loading ? "Loading..." : auth.findUser?.fullName}
         </h1>
@@ -79,12 +89,22 @@ const Profile = () => {
             sx={{ width: "10rem", height: "10rem", border: "4px solid white" }}
           />
           {isCurrentUser ? (
-            <Button onClick={handleOpenProfileModal} variant="contained" sx={{ borderRadius: "20px" }}>
+            <Button
+              onClick={handleOpenProfileModal}
+              variant="contained"
+              sx={{ borderRadius: "20px" }}
+            >
               Edit Profile
             </Button>
           ) : (
-            <Button onClick={handleFollowUser} variant="contained" sx={{ borderRadius: "20px" }}>
-              {auth?.user?.following?.includes(Number(id)) ? "Unfollow" : "Follow"}
+            <Button
+              onClick={handleFollowUser}
+              variant="contained"
+              sx={{ borderRadius: "20px" }}
+            >
+              {auth?.user?.following?.includes(Number(id))
+                ? "Unfollow"
+                : "Follow"}
             </Button>
           )}
         </div>
@@ -143,7 +163,10 @@ const Profile = () => {
         <Box sx={{ width: "100%", typography: "body1" }}>
           <TabContext value={tabValue}>
             <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-              <TabList onChange={handleTabChange} aria-label="lab API tabs example">
+              <TabList
+                onChange={handleTabChange}
+                aria-label="lab API tabs example"
+              >
                 <Tab label="Tweets" value="1" />
                 <Tab label="Replies" value="2" />
                 <Tab label="Media" value="3" />
@@ -151,12 +174,15 @@ const Profile = () => {
               </TabList>
             </Box>
             <TabPanel value="1">
-              {auth.findUser?.tweets?.length ? (
-                auth.findUser.tweets.map((tweet) => <TweetCard key={tweet.id} tweet={tweet} />)
+              {twit?.twits?.length > 0 ? (
+                twit.twits.map((item) => (
+                  <TweetCard key={item.id} item={item} />
+                ))
               ) : (
-                <p>No tweets yet</p>
+                <p className="text-gray-500 text-center">Chưa có tweet nào</p>
               )}
             </TabPanel>
+
             <TabPanel value="2">User replies</TabPanel>
             <TabPanel value="3">Media</TabPanel>
             <TabPanel value="4">Likes</TabPanel>
@@ -165,7 +191,10 @@ const Profile = () => {
       </section>
 
       {/* Profile Modal Section */}
-      <ProfileModal open={openProfileModal} handleClose={handleCloseProfileModal} />
+      <ProfileModal
+        open={openProfileModal}
+        handleClose={handleCloseProfileModal}
+      />
     </div>
   );
 };

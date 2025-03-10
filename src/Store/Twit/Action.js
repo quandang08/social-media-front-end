@@ -88,7 +88,6 @@ export const createTweetReply = (tweetData) => async (dispatch) => {
   }
 };
 
-
 export const createReTweet = (twitId) => async (dispatch) => {
   try {
     const { data } = await api.put(`/api/twits/${twitId}/retwit`);
@@ -113,7 +112,7 @@ export const likeTweet = (twitId) => async (dispatch) => {
 
 export const deleteTweet = (twitId) => async (dispatch) => {
   try {
-    const { data } = await api.delete(`/api/tweet/${twitId}`);
+    const { data } = await api.delete(`/api/twits/${twitId}`);
     console.log("deleted tweet: ", data);
     dispatch({ type: TWEET_DELETE_SUCCESS, payload: twitId });
   } catch (error) {

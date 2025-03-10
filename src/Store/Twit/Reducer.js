@@ -76,7 +76,7 @@ const tweetReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: null,
-        userTwits: action.payload,
+        twits: action.payload,
       };
 
     case USER_LIKE_TWEET_SUCCESS:
@@ -125,8 +125,7 @@ const tweetReducer = (state = initialState, action) => {
 
     case FIND_TWEET_BY_ID_SUCCESS:
       return { ...state, loading: false, error: null, twit: action.payload };
-    
-    
+
     case REPLY_TWEET_SUCCESS:
       return {
         ...state,
