@@ -53,7 +53,7 @@ export const authReducer = (state = initialState, action) => {
         loading: false,
         error: null,
         user: action.payload,
-        updateUser:true
+        updateUser: true,
       };
 
     case FIND_USER_BY_ID_SUCCESS:
@@ -61,16 +61,27 @@ export const authReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: null,
-        findUser: action.payload, 
+        findUser: action.payload,
       };
+
     case FOLLOW_USER_SUCCESS:
-        return {
-            ...state,
-            loading: false,
-            error: null,
-            findUser: action.payload,
-        };
-        
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        findUser: action.payload, // Cập nhật thông tin người được follow
+
+        // Cập nhật ngay danh sách following của current user
+        user: {
+          ...state.user,
+          following: state.user.following.includes(action.payload.id)
+            ? state.user.following.filter(
+                (userId) => userId !== action.payload.id
+              ) // Nếu đã follow thì unfollow
+            : [...state.user.following, action.payload.id], // Nếu chưa follow thì thêm vào
+        },
+      };
+
     case LOGIN_USER_FAILURE:
     case REGISTER_USER_FAILURE:
     case GET_USER_PROFILE_FAILURE:

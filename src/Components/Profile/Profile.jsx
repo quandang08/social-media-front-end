@@ -31,11 +31,17 @@ const Profile = () => {
   const handleFollowUser = async () => {
     try {
       await dispatch(followUserAction(id));
-      // Không cần fetch lại findUserById(id) vì useEffect sẽ lo việc đó
+  
+      // Cập nhật Redux ngay lập tức để giao diện đổi từ Follow -> Unfollow
+      dispatch({
+        type: "UPDATE_FOLLOWING",
+        payload: id,
+      });
+
     } catch (error) {
       console.error("Follow user failed", error);
     }
-  };
+  };  
 
   useEffect(() => {
     if (id) {
