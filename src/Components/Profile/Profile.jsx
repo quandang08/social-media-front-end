@@ -175,9 +175,9 @@ const Profile = () => {
             </Box>
             <TabPanel value="1">
               {twit?.twits?.length > 0 ? (
-                twit.twits.map((item) => (
-                  <TweetCard key={item.id} item={item} />
-                ))
+                twit.twits
+                  .filter((tweet) => tweet.user.id.toString() === id) // So sánh ID
+                  .map((item) => <TweetCard key={item.id} item={item} />)
               ) : (
                 <p className="text-gray-500 text-center">Chưa có tweet nào</p>
               )}
