@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
@@ -57,9 +56,13 @@ const Navigation = () => {
       <Box sx={{ display: "flex", flexDirection: { xs: "row", md: "column" } }}>
         <Box sx={{ mb: 1, textAlign: "left", pl: 0.3 }}>
           <img
-            src="logo.jpg"
+            src="logo.png"
             alt="Logo"
-            style={{ height: 45, cursor: "pointer" }}
+            style={{
+              height: 100,
+              cursor: "pointer",
+              display: "block",
+            }}
           />
         </Box>
 
@@ -143,7 +146,10 @@ const Navigation = () => {
         <Box display="flex" alignItems="center" sx={{ gap: 1.5 }}>
           <Avatar
             alt="User"
-            src="user-avatar.jpg"
+            src={
+              auth.user?.image ||
+              "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
+            }
             sx={{ width: 40, height: 40, cursor: "pointer" }}
             onClick={() =>
               auth?.user?.id && navigate(`/profile/${auth.user.id}`)
@@ -155,8 +161,7 @@ const Navigation = () => {
               {auth.user?.fullName || "Amu"}
             </Typography>
             <Typography sx={{ fontSize: 13, color: "#aaa" }}>
-              @
-              {auth.user?.email?.replace(/\s+/g, "_").toLowerCase() || "amu"}
+              @{auth.user?.email?.replace(/\s+/g, "_").toLowerCase() || "amu"}
             </Typography>
           </Box>
         </Box>

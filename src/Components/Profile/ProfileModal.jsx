@@ -7,7 +7,7 @@ import TextField from "@mui/material/TextField";
 import SaveIcon from "@mui/icons-material/Save";
 import * as Yup from "yup";
 import "./ProfileModal.css";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { updateUserProfile } from "../../Store/Auth/Action";
 import { uploadToCloudinary } from "../../Utils/uploadToCloudnary";
 
@@ -27,19 +27,22 @@ const style = {
 };
 
 const ProfileModal = ({ open, handleClose }) => {
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
+  const [uploading, setUploading] = React.useState(false);
+  const { auth } = useSelector((store) => store);
 
   const formik = useFormik({
+    enableReinitialize: true,
     initialValues: {
-      fullname: "",
-      website: "",
-      location: "",
-      bio: "",
-      backgroundImage: "",
-      avatar: "",
+      fullName: auth.user?.fullName || "",
+      website: auth.user?.website || "",
+      location: auth.user?.location || "",
+      bio: auth.user?.bio || "",
+      backgroundImage: auth.user?.backgroundImage || "",
+      image: auth.user?.image || "",
     },
     validationSchema: Yup.object({
-      fullname: Yup.string().required("Fullname is required"),
+      fullName: Yup.string().required("Fullname is required"),
       website: Yup.string().url("Invalid URL format"),
       bio: Yup.string().max(150, "Bio should not exceed 150 characters"),
     }),
@@ -51,19 +54,23 @@ const ProfileModal = ({ open, handleClose }) => {
     },
   });
 
-  const handleImageChange = (event, field) => {
-    // const file = await uploadToCloudinary(event.target.files[0]);
+  const handleImageChange = async (event, field) => {
     const file = event.target?.files?.[0];
     if (file) {
       if (!file.type.startsWith("image/")) {
         alert("Please upload a valid image file.");
         return;
       }
-      const reader = new FileReader();
-      reader.onload = () => {
-        formik.setFieldValue(field, reader.result);
-      };
-      reader.readAsDataURL(file);
+
+      setUploading(true);
+      try {
+        const imageUrl = await uploadToCloudinary(file);
+        formik.setFieldValue(field, imageUrl);
+      } catch (error) {
+        alert("Image upload failed. Please try again.");
+      } finally {
+        setUploading(false);
+      }
     }
   };
 
@@ -83,8 +90,9 @@ const ProfileModal = ({ open, handleClose }) => {
               color="primary"
               startIcon={<SaveIcon />}
               className="text-sm font-bold rounded-md"
+              disabled={uploading || formik.isSubmitting}
             >
-              Save
+              {uploading ? "Uploading..." : "Save"}
             </Button>
           </div>
 
@@ -109,7 +117,7 @@ const ProfileModal = ({ open, handleClose }) => {
             <img
               className="w-24 h-24 rounded-full border-4 border-white shadow-md"
               src={
-                formik.values.avatar ||
+                formik.values.image ||
                 "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
               }
               alt="Avatar"
@@ -118,7 +126,7 @@ const ProfileModal = ({ open, handleClose }) => {
               type="file"
               accept="image/*"
               className="absolute w-50 h-50 opacity-0 cursor-pointer"
-              onChange={(e) => handleImageChange(e, "avatar")}
+              onChange={(e) => handleImageChange(e, "image")}
             />
           </div>
 
@@ -132,18 +140,18 @@ const ProfileModal = ({ open, handleClose }) => {
             }}
           >
             <div>
-              <label htmlFor="fullname">Fullname</label>
+              <label htmlFor="fullName">Fullname</label>
               <TextField
-                id="fullname"
-                name="fullname"
-                label="Fullname"
+                id="fullName"
+                name="fullName"
+                label="FullName"
                 variant="outlined"
-                value={formik.values.fullname}
+                value={formik.values.fullName}
                 onChange={formik.handleChange}
                 error={
-                  formik.touched.fullname && Boolean(formik.errors.fullname)
+                  formik.touched.fullName && Boolean(formik.errors.fullName)
                 }
-                helperText={formik.touched.fullname && formik.errors.fullname}
+                helperText={formik.touched.fullName && formik.errors.fullName}
                 fullWidth
                 margin="normal"
               />

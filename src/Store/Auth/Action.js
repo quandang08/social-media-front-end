@@ -149,7 +149,7 @@ export const findUserById = (userId) => async (dispatch) => {
 // 🟢 Thay đổi thông tin người dùng
 export const updateUserProfile = (reqData) => async (dispatch) => {
   try {
-    const { data } = await api.put(`/api/users/update/`, reqData)
+    const { data } = await api.put(`/api/users/update`, reqData)
     console.log("updated user", data);
     dispatch({ type: UPDATE_USER_SUCCESS, payload: data });
 

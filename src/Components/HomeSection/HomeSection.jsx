@@ -13,8 +13,8 @@ import { uploadToCloudinary } from "../../Utils/uploadToCloudnary";
 const validationSchema = Yup.object().shape({
   content: Yup.string().required("Tweet text is required"),
 });
-
 const HomeSection = () => {
+  const { auth } = useSelector((store) => store);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -51,10 +51,11 @@ const HomeSection = () => {
     formik.setFieldValue("content", formik.values.content + emoji.native);
     setShowEmojiPicker(false);
   };
+  
   const handleSubmit = (values) => {
-    dispatch(createTweet(values))
+    dispatch(createTweet(values));
     console.log("values", values);
-  }
+  };
 
   const formik = useFormik({
     initialValues: { content: "" },
@@ -81,7 +82,10 @@ const HomeSection = () => {
           marginTop: 25,
         }}
       >
-        <Avatar src="https://i.pravatar.cc/100" alt="username" />
+        <Avatar
+          src={auth.user?.image || "https://i.pravatar.cc/100"}
+          alt={auth.user?.fullName || "User"}
+        />
         <form
           onSubmit={formik.handleSubmit}
           style={{
@@ -118,9 +122,9 @@ const HomeSection = () => {
                 display: "flex",
                 justifyContent: "center",
                 alignItems: "center",
-                backgroundColor: "#000", 
+                backgroundColor: "#000",
               }}
-            > 
+            >
               <img
                 src={selectedImage}
                 alt="Preview"

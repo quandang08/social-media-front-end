@@ -37,7 +37,6 @@ const Profile = () => {
     try {
       await dispatch(followUserAction(id));
 
-      // Cập nhật Redux ngay lập tức để giao diện đổi từ Follow -> Unfollow
       dispatch({
         type: "UPDATE_FOLLOWING",
         payload: id,
@@ -48,15 +47,15 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    if (id) {
-      setLoading(true);
-      Promise.all([
-        dispatch(findUserById(id)),
-        dispatch(getUsersTweets(id)),
-      ]).finally(() => setLoading(false));
-    }
+    //dispatch({ type: "RESET_FIND_USER" }); 
+    setLoading(true);
+    Promise.all([
+      dispatch(findUserById(id)),
+      dispatch(getUsersTweets(id)),
+    ]).finally(() => setLoading(false));
   }, [id, dispatch]);
-
+  
+  console.log("Update User State:", auth.updateUser);
   return (
     <div>
       {/* Header Section */}
@@ -85,9 +84,10 @@ const Profile = () => {
           <Avatar
             className="transform -translate-y-24"
             alt={auth.findUser?.fullName}
-            src={auth.findUser?.avatar || ""}
+            src={auth.findUser?.id === auth.user?.id ? auth.user?.image : auth.findUser?.image || ""}
             sx={{ width: "10rem", height: "10rem", border: "4px solid white" }}
           />
+
           {isCurrentUser ? (
             <Button
               onClick={handleOpenProfileModal}
@@ -130,12 +130,12 @@ const Profile = () => {
           <div className="py-1 flex space-x-5">
             <div className="flex items-center text-gray-500">
               <BusinessCenterIcon />
-              <p className="ml-2">Education</p>
+              <p className="ml-2">{auth.findUser?.website}</p>
             </div>
 
             <div className="flex items-center text-gray-500">
               <Place />
-              <p className="ml-2">Viet Nam</p>
+              <p className="ml-2">{auth.findUser?.location}</p>
             </div>
 
             <div className="flex items-center text-gray-500">
@@ -176,7 +176,7 @@ const Profile = () => {
             <TabPanel value="1">
               {twit?.twits?.length > 0 ? (
                 twit.twits
-                  .filter((tweet) => tweet.user.id.toString() === id) // So sánh ID
+                  .filter((tweet) => tweet.user.id.toString() === id)
                   .map((item) => <TweetCard key={item.id} item={item} />)
               ) : (
                 <p className="text-gray-500 text-center">Chưa có tweet nào</p>

@@ -85,7 +85,7 @@ const TweetCard = ({ item }) => {
         className="cursor-pointer"
         alt="User"
         src={
-          item?.image ||
+          item?.user?.image ||
           "https://cdn.pixabay.com/photo/2020/04/28/13/27/rice-5104528_1280.jpg"
         }
       />

@@ -12,6 +12,7 @@ import {
   FIND_USER_BY_ID_SUCCESS,
   FOLLOW_USER_SUCCESS,
   UPDATE_USER_SUCCESS,
+  RESET_FIND_USER,
 } from "./ActionType";
 
 const initialState = {
@@ -86,6 +87,9 @@ export const authReducer = (state = initialState, action) => {
     case REGISTER_USER_FAILURE:
     case GET_USER_PROFILE_FAILURE:
       return { ...state, loading: false, error: action.payload };
+
+    case RESET_FIND_USER:
+      return { ...state, findUser: null };
 
     case LOGOUT:
       return initialState;

@@ -51,7 +51,6 @@ const HomePage = () => {
           overflowY: "auto",
         }}
       >
-        {/* <Route path="/" element={<Navigate to="/signin" replace />} /> */}
         <Routes>
           <Route path="/home" element={<HomeSection />} />
           <Route path="/explore" element={<Explore />} />

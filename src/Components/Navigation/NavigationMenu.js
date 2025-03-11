@@ -1,5 +1,5 @@
 import HomeIcon from "@mui/icons-material/Home";
-import ExploreIcon from "@mui/icons-material/Explore";
+import SearchIcon from '@mui/icons-material/Search';
 import NotificationsIcon from "@mui/icons-material/Notifications";
 import MessageIcon from "@mui/icons-material/Message";
 import ListAltIcon from "@mui/icons-material/ListAlt";
@@ -10,7 +10,7 @@ import PendingIcon from '@mui/icons-material/Pending';
 
 export const navigation = [
   { title: "Home", icon: <HomeIcon style={{ color: "black" }}/>, path: "/home" },
-  { title: "Explore", icon: <ExploreIcon style={{ color: "black" }}/>, path: "/explore" },
+  { title: "Explore", icon: <SearchIcon style={{ color: "black" }}/>, path: "/explore" },
   { title: "Notifications", icon: <NotificationsIcon style={{ color: "black" }}/>, path: "/notifications" },
   { title: "Messages", icon: <MessageIcon style={{ color: "black" }}/>, path: "/messages" },
   { title: "Lists", icon: <ListAltIcon style={{ color: "black" }}/>, path: "/lists" },
