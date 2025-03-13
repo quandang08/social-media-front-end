@@ -12,6 +12,8 @@ import {
   FIND_USER_BY_ID_SUCCESS,
   FOLLOW_USER_SUCCESS,
   UPDATE_USER_SUCCESS,
+  FIND_USER_BY_NAME_REQUEST,
+  FIND_USER_BY_NAME_SUCCESS,
   RESET_FIND_USER,
 } from "./ActionType";
 
@@ -27,6 +29,7 @@ export const authReducer = (state = initialState, action) => {
     case LOGIN_USER_REQUEST:
     case REGISTER_USER_REQUEST:
     case GET_USER_PROFILE_REQUEST:
+    case FIND_USER_BY_NAME_REQUEST:
       return { ...state, loading: true, error: null };
 
     case LOGIN_USER_SUCCESS:
@@ -58,6 +61,7 @@ export const authReducer = (state = initialState, action) => {
       };
 
     case FIND_USER_BY_ID_SUCCESS:
+    case FIND_USER_BY_NAME_SUCCESS:
       return {
         ...state,
         loading: false,
@@ -78,7 +82,7 @@ export const authReducer = (state = initialState, action) => {
           following: state.user.following.includes(action.payload.id)
             ? state.user.following.filter(
                 (userId) => userId !== action.payload.id
-              ) // Nếu đã follow thì unfollow
+              )
             : [...state.user.following, action.payload.id], // Nếu chưa follow thì thêm vào
         },
       };

@@ -47,7 +47,6 @@ const Profile = () => {
   };
 
   useEffect(() => {
-    //dispatch({ type: "RESET_FIND_USER" }); 
     setLoading(true);
     Promise.all([
       dispatch(findUserById(id)),
@@ -130,7 +129,8 @@ const Profile = () => {
           <div className="py-1 flex space-x-5">
             <div className="flex items-center text-gray-500">
               <BusinessCenterIcon />
-              <p className="ml-2">{auth.findUser?.website}</p>
+              {/* <p className="ml-2">{auth.findUser?.website}</p> */}
+              <p className="ml-2">education</p>
             </div>
 
             <div className="flex items-center text-gray-500">

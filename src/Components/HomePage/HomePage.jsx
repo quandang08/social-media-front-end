@@ -10,9 +10,9 @@ import TwitDetails from "../TwitDetails/TwitDetails";
 import Notifications from "../Notifications/Notifications";
 import Explore from "../Explore/Explore";
 import Messages from "../Messages/Messages";
-import Lists from "../Lists/Lists"
-import Communities from "../Communities/Communities"
-import Verified from "../Verified/Verified"
+import Aura from "../AURA/Aura";
+import Communities from "../Communities/Communities";
+import Verified from "../Verified/Verified";
 
 const HomePage = () => {
   return (
@@ -24,17 +24,17 @@ const HomePage = () => {
         px: { xs: 2, md: 4, lg: 10 },
         gap: 0.5,
         minHeight: "100vh",
-        bgcolor: "#f5f5f5",
+        bgcolor: "white",
       }}
     >
       {/* Left Part */}
       <Box
-        flex={{ xs: "none", md: 0.2 }}
+        flex={{ xs: 1, md: 0.2 }}
         bgcolor="white"
         p={1}
         sx={{
-          height: "100vh",
-          position: "sticky",
+          height: { xs: "auto", md: "100vh" },
+          position: { xs: "relative", md: "sticky" },
           top: 0,
         }}
       >
@@ -47,7 +47,7 @@ const HomePage = () => {
         bgcolor="white"
         p={3}
         sx={{
-          minHeight: "100%",
+          minHeight: "100vh",
           overflowY: "auto",
         }}
       >
@@ -56,9 +56,9 @@ const HomePage = () => {
           <Route path="/explore" element={<Explore />} />
           <Route path="/notifications" element={<Notifications />} />
           <Route path="/messages" element={<Messages />} />
-          <Route path="/lists" element={<Lists />} />
+          <Route path="/aura" element={<Aura />} />
           <Route path="/communities" element={<Communities />} />
-          <Route path="/verified" element={<Verified />} /> 
+          <Route path="/verified" element={<Verified />} />
           <Route path="/profile/:id" element={<Profile />} />
           <Route path="/twit/:id" element={<TwitDetails />} />
         </Routes>

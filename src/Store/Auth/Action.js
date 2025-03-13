@@ -13,6 +13,9 @@ import {
   FOLLOW_USER_FAILURE,
   UPDATE_USER_FAILURE,
   UPDATE_USER_SUCCESS,
+  FIND_USER_BY_NAME_SUCCESS,
+  FIND_USER_BY_NAME_FAILURE,
+  FIND_USER_BY_NAME_REQUEST,
 } from "./ActionType";
 
 // Hàm lưu JWT vào localStorage
@@ -145,6 +148,26 @@ export const findUserById = (userId) => async (dispatch) => {
     });
   }
 };
+
+// 🟢 Tim User theo full name
+export const findUserByName = (fullName) => async (dispatch) => {
+  try {
+    dispatch({ type: FIND_USER_BY_NAME_REQUEST });
+
+    const { data } = await api.get(`/api/users/search?query=${fullName}`);
+    console.log("find user name: ", data);
+
+    dispatch({ type: FIND_USER_BY_NAME_SUCCESS, payload: data });
+  } catch (error) {
+    console.error("Search name failure:", error);
+
+    dispatch({
+      type: FIND_USER_BY_NAME_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+};
+
 
 // 🟢 Thay đổi thông tin người dùng
 export const updateUserProfile = (reqData) => async (dispatch) => {

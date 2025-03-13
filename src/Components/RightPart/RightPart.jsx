@@ -12,7 +12,7 @@ const RightPart = () => {
   const handleCloseModal = () => setModalOpen(false);
 
   return (
-    <div className="py-5 px-4 space-y-7 bg-white text-black">
+    <div className="py-5 px-4 space-y-7 bg-white text-black relative z-10">
       {/* Search Bar */}
       <div className="relative flex items-center space-x-2">
         <input

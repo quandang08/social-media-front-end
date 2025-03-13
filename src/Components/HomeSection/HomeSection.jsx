@@ -10,9 +10,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { createTweet, getAllTweets } from "../../Store/Twit/Action";
 import { uploadToCloudinary } from "../../Utils/uploadToCloudnary";
 
-const validationSchema = Yup.object().shape({
-  content: Yup.string().required("Tweet text is required"),
-});
 const HomeSection = () => {
   const { auth } = useSelector((store) => store);
   const [selectedImage, setSelectedImage] = useState(null);
@@ -21,6 +18,10 @@ const HomeSection = () => {
 
   const dispatch = useDispatch();
   const { twit } = useSelector((store) => store);
+
+  const validationSchema = Yup.object().shape({
+    content: Yup.string().required("Tweet text is required"),
+  });
 
   useEffect(() => {
     dispatch(getAllTweets());
@@ -51,7 +52,7 @@ const HomeSection = () => {
     formik.setFieldValue("content", formik.values.content + emoji.native);
     setShowEmojiPicker(false);
   };
-  
+
   const handleSubmit = (values) => {
     dispatch(createTweet(values));
     console.log("values", values);
