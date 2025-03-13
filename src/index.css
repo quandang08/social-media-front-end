@@ -14,6 +14,28 @@ code {
 .hiddenScrollBar::-webkit-scrollbar{
   display: none;
 }
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+.hover-zoom {
+  transition: transform 0.3s ease;
+}
+.hover-zoom:hover {
+  transform: scale(1.1) rotate(3deg);
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
