@@ -11,7 +11,7 @@ import {
   FiMoreHorizontal,
 } from "react-icons/fi";
 import { IoMdSend } from "react-icons/io";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { createTweetReply } from "../../Store/Twit/Action";
 import { useFormik } from "formik";
 
@@ -21,8 +21,8 @@ const style = {
   left: "50%",
   transform: "translate(-50%, -50%)",
   width: 550,
-  bgcolor: "#1E1E1E",
-  color: "white",
+  bgcolor: "white",
+  color: "black",
   borderRadius: "16px",
   boxShadow: 24,
   p: 2,
@@ -37,6 +37,7 @@ export default function ReplyModal({
   const [uploadingImage, setUploadingImage] = React.useState(false);
   const [selectImage, setSelectedImage] = React.useState("");
   const dispatch = useDispatch();
+  const { auth } = useSelector((store) => store);
 
   const handleSubmit = async (values) => {
     console.log("Submit reply:", values);
@@ -76,45 +77,49 @@ export default function ReplyModal({
         <div className="flex gap-3 px-2 mb-4">
           <Avatar
             alt="User Avatar"
-            src="https://cdn-media.sforum.vn/storage/app/media/THANHAN/2/2a/avatar-dep-119.jpg"
+            src={item?.user?.image || ""}
             className="cursor-pointer"
           />
+
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold">Donald J. Trump</span>
+              <span className="font-semibold">{item?.user?.fullName}</span>
               <span className="text-gray-400 text-sm">
-                @realDonaldTrump · 17h
+                @{item?.user?.fullName.split(" ").join("_").toLowerCase()} · 17h
               </span>
             </div>
-            <p className="text-gray-300">pic.x.com/JivikzDa3v</p>
+            <p className="text-gray-600">pic.x.com/JivikzDa3v</p>
           </div>
         </div>
 
         {/* Replying to Section */}
-        <div className="flex items-center px-4 py-2 mb-4 text-gray-400 text-sm bg-gray-800 rounded-md">
+        <div className="flex items-center px-4 py-2 mb-4 text-gray-600 text-sm bg-gray-200 rounded-md">
           <span>Replying to </span>
-          <span className="text-blue-400 ml-1">@realDonaldTrump</span>
+          <span className="text-blue-400 ml-1">
+            @{item?.user?.fullName.split(" ").join("_").toLowerCase()}
+          </span>
         </div>
 
         {/* User Reply Section */}
         <div className="flex gap-3 px-2 mb-4">
           <Avatar
             alt="User Avatar"
-            src="https://khoinguonsangtao.vn/wp-content/uploads/2022/07/avatar-gau-cute.jpg"
+            src={auth.user?.image || ""}
             className="cursor-pointer"
           />
+
           <textarea
             name="content"
             value={formik.values.content}
             onChange={formik.handleChange}
             placeholder="Post your reply"
-            className="w-full bg-transparent text-white border-b border-gray-600 p-2 focus:outline-none resize-none h-24"
+            className="w-full bg-transparent text-black border-b border-gray-400 p-2 focus:outline-none resize-none h-24"
           />
         </div>
 
         {/* Footer with Icons */}
         <div className="flex justify-between items-center mt-4 px-2">
-          <div className="flex gap-4 text-gray-400">
+          <div className="flex gap-4 text-gray-600">
             <FiImage className="cursor-pointer hover:text-white" size={20} />
             <FiBarChart2
               className="cursor-pointer hover:text-white"
@@ -129,7 +134,13 @@ export default function ReplyModal({
           <button
             type="submit"
             onClick={formik.handleSubmit}
-            className="flex items-center gap-2 bg-blue-500 text-white px-4 py-1 rounded-full hover:bg-blue-600"
+            disabled={!formik.values.content.trim()} // Vô hiệu hóa khi nội dung trống
+            className={`flex items-center gap-2 px-4 py-1 rounded-full 
+    ${
+      formik.values.content.trim()
+        ? "bg-blue-500 hover:bg-blue-600 text-white"
+        : "bg-gray-300 text-gray-500 cursor-not-allowed"
+    }`}
           >
             <IoMdSend size={18} /> Reply
           </button>
