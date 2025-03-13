@@ -46,10 +46,10 @@ const Navigation = () => {
         bottom: 0,
         backgroundColor: "#fff",
         zIndex: 10,
-        padding: 1,
-        boxShadow: "0 -2px 5px rgba(0,0,0,0.1)",
+        padding: 0.5,
         justifyContent: "space-around",
         alignItems: "center",
+        borderRight: "1px solid #ccc",
       }}
     >
       {/* Logo và Menu */}
@@ -114,8 +114,8 @@ const Navigation = () => {
       {/* Nút Post */}
       <Button
         variant="contained"
-        fullWidth
         sx={{
+          width: "190px",
           bgcolor: "#1d9bf0",
           color: "white",
           textTransform: "none",
@@ -139,42 +139,51 @@ const Navigation = () => {
         sx={{
           p: 2,
           mt: 1,
-          borderTop: "1px solid #e0e0e0",
+          borderRadius: "12px",
+          bgcolor: "white",
+          transition: "all 0.3s",
+          "&:hover": {
+            bgcolor: "#e8f5fe",
+          },
         }}
       >
-        {/* Avatar và Thông tin User */}
-        <Box display="flex" alignItems="center" sx={{ gap: 1.5 }}>
+        <Box display="flex" alignItems="center" sx={{ flex: 1, gap: 1.5 }}>
           <Avatar
             alt="User"
             src={
               auth.user?.image ||
               "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_960_720.png"
             }
-            sx={{ width: 40, height: 40, cursor: "pointer" }}
+            sx={{ width: 45, height: 45, cursor: "pointer" }}
             onClick={() =>
               auth?.user?.id && navigate(`/profile/${auth.user.id}`)
             }
           />
 
-          <Box>
-            <Typography sx={{ fontSize: 15, fontWeight: "bold" }}>
+          <Box sx={{ flex: 1 }}>
+            <Typography
+              sx={{ fontSize: 15, fontWeight: "bold", whiteSpace: "nowrap" }}
+            >
               {auth.user?.fullName || "Amu"}
             </Typography>
-            <Typography sx={{ fontSize: 13, color: "#aaa" }}>
-              @{auth.user?.email?.replace(/\s+/g, "_").toLowerCase() || "amu"}
+            <Typography sx={{ fontSize: 13, color: "#657786" }}>
+              @{auth.user?.email?.split("@")[0] || "amu"}
             </Typography>
           </Box>
-        </Box>
 
-        {/* Icon MoreHoriz */}
-        <MoreHorizIcon
-          sx={{
-            color: "#1d9bf0",
-            cursor: "pointer",
-            fontSize: "20px",
-          }}
-          onClick={handleMenuOpen}
-        />
+          <MoreHorizIcon
+            sx={{
+              bgcolor: "white",
+              color: "black",
+              cursor: "pointer",
+              fontSize: "35px",
+              p: 1,
+              borderRadius: "50%",
+              "&:hover": { bgcolor: "rgba(255, 255, 255, 0.1)" },
+            }}
+            onClick={handleMenuOpen}
+          />
+        </Box>
       </Box>
 
       {/* Menu */}
@@ -182,17 +191,48 @@ const Navigation = () => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleMenuClose}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "right",
+        }}
+        transformOrigin={{
+          vertical: "bottom",
+          horizontal: "right",
+        }}
         slotProps={{
           paper: {
             sx: {
-              mt: 1,
-              boxShadow: 3,
-              borderRadius: 2,
+              backgroundColor: "#000",
+              color: "white",
+              borderRadius: 3,
+              boxShadow: "0px 0px 15px rgba(255, 255, 255, 0.2)",
+              padding: "10px",
+              minWidth: 230,
+              "&::before": {
+                content: '""',
+                position: "absolute",
+                top: -6,
+                left: "50%",
+                transform: "translateX(-50%) rotate(45deg)",
+                width: 12,
+                height: 12,
+                backgroundColor: "#000",
+              },
+              "& .MuiMenuItem-root": {
+                fontSize: 15,
+                padding: "10px 15px",
+                "&:hover": {
+                  backgroundColor: "#222",
+                },
+              },
             },
           },
         }}
       >
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        <MenuItem> Add an existing account </MenuItem>
+        <MenuItem onClick={handleLogout}>
+          Log out @{auth.user?.email?.split("@")[0] || "user"}
+        </MenuItem>
       </Menu>
     </Box>
   );
