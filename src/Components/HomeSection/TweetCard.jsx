@@ -11,12 +11,11 @@ import ShareIcon from "@mui/icons-material/Share";
 import BookmarkBorderIcon from "@mui/icons-material/BookmarkBorder";
 import ReplyModal from "./ReplyModal";
 import { useDispatch, useSelector } from "react-redux";
-import { createReTweet, likeTweet } from "../../Store/Twit/Action";
+import { createReTweet, deleteTweet, likeTweet } from "../../Store/Twit/Action";
 
 const TweetCard = ({ item }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const currentUser = useSelector((state) => state.user?.currentUser || null);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [openReplyModal, setOpenReplyModal] = useState(false);
@@ -25,26 +24,28 @@ const TweetCard = ({ item }) => {
 
   const [isRetweeted, setIsRetweeted] = useState(false);
   const [retweetCount, setRetweetCount] = useState(item?.totalRetweets || 0);
-
+  const findUser  = useSelector((state) => state.auth?.findUser || null);
   const [tweet, setTweet] = useState(item);
+  
+
   // Cập nhật isLiked mỗi khi item thay đổi
   useEffect(() => {
     if (!item) return;
     setIsLiked(
-      Array.isArray(item.liked) && item.liked.includes(currentUser?.id)
+      Array.isArray(item.liked) && item.liked.includes(findUser?.id)
     );
     setLikeCount(item?.totalLikes || 0);
-  }, [item, currentUser]);
+  }, [item, findUser]);
 
   //use Efferct Retweet
   useEffect(() => {
     if (!item) return;
     setIsRetweeted(
       Array.isArray(item.retwitUserId) &&
-        item.retwitUserId.includes(currentUser?.id)
+        item.retwitUserId.includes(findUser?.id)
     );
     setRetweetCount(item?.totalRetweets || 0);
-  }, [item, currentUser]);
+  }, [item, findUser]);
 
   const handleLikeTweet = async () => {
     try {
@@ -61,7 +62,7 @@ const TweetCard = ({ item }) => {
       const response = await dispatch(createReTweet(item.id));
 
       if (response?.payload) {
-        setIsRetweeted(response.payload.retwitUserId.includes(currentUser?.id));
+        setIsRetweeted(response.payload.retwitUserId.includes(findUser?.id));
         setRetweetCount(response.payload.totalRetweets);
       }
     } catch (error) {
@@ -69,9 +70,13 @@ const TweetCard = ({ item }) => {
     }
   };
 
-  const handleDeleteTweet = () => {
-    console.log("delete tweet");
-    handleClose();
+  const handleDeleteTweet = async () => {
+    try {
+      await dispatch(deleteTweet(item.id));
+      handleClose();
+    } catch (error) {
+      console.error("Lỗi khi xóa tweet:", error);
+    }
   };
 
   const handleClose = () => {
@@ -123,7 +128,9 @@ const TweetCard = ({ item }) => {
             onClose={() => setAnchorEl(null)}
           >
             <MenuItem onClick={() => setAnchorEl(null)}>Edit</MenuItem>
-            <MenuItem onClick={() => setAnchorEl(null)}>Delete</MenuItem>
+            {item?.user?.id === findUser?.id && (
+              <MenuItem onClick={handleDeleteTweet}>Delete</MenuItem>
+            )}
           </Menu>
         </div>
 

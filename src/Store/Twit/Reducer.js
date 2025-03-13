@@ -95,7 +95,7 @@ const tweetReducer = (state = initialState, action) => {
             ? {
                 ...tweet,
                 totalLikes: action.payload.totalLikes,
-                liked: action.payload.likedUserIds, // Cập nhật danh sách người đã like
+                liked: action.payload.likedUserIds,
               }
             : tweet
         ),
@@ -104,9 +104,7 @@ const tweetReducer = (state = initialState, action) => {
     case TWEET_DELETE_SUCCESS:
       return {
         ...state,
-        loading: false,
-        error: null,
-        twits: state.twits.filter((twit) => twit._id !== action.payload),
+        twits: state.twits.filter((twit) => twit.id !== action.payload),
       };
 
     case RETWEET_SUCCESS:
