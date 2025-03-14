@@ -140,7 +140,7 @@ const Profile = () => {
 
             <div className="flex items-center text-gray-500">
               <CalendarMonth />
-              <p className="ml-2">Joined August 2022</p>
+              <p className="ml-2">Joined August 2022</p> 
             </div>
           </div>
 
