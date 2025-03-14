@@ -11,13 +11,13 @@ import { createTweet, getAllTweets } from "../../Store/Twit/Action";
 import { uploadToCloudinary } from "../../Utils/uploadToCloudnary";
 
 const HomeSection = () => {
-  const { auth } = useSelector((store) => store);
+  const auth = useSelector((state) => state.auth);
   const [selectedImage, setSelectedImage] = useState(null);
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
 
   const dispatch = useDispatch();
-  const { twit } = useSelector((store) => store);
+  const twit = useSelector((state) => state.twit);
 
   const validationSchema = Yup.object().shape({
     content: Yup.string().required("Tweet text is required"),

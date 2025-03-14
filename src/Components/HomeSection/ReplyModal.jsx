@@ -37,7 +37,7 @@ export default function ReplyModal({
   const [uploadingImage, setUploadingImage] = React.useState(false);
   const [selectImage, setSelectedImage] = React.useState("");
   const dispatch = useDispatch();
-  const { auth } = useSelector((store) => store);
+  const auth = useSelector((state) => state.auth);
 
   const handleSubmit = async (values) => {
     console.log("Submit reply:", values);
