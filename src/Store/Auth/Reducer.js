@@ -15,6 +15,9 @@ import {
   FIND_USER_BY_NAME_REQUEST,
   FIND_USER_BY_NAME_SUCCESS,
   RESET_FIND_USER,
+  GET_UNFOLLOWED_USERS_REQUEST,
+  GET_UNFOLLOWED_USERS_SUCCESS,
+  GET_UNFOLLOWED_USERS_FAILURE,
 } from "./ActionType";
 
 const initialState = {
@@ -22,6 +25,7 @@ const initialState = {
   loading: false,
   error: null,
   jwt: localStorage.getItem("jwt") || null,
+  unfollowedUsers: [],
 };
 
 export const authReducer = (state = initialState, action) => {
@@ -30,6 +34,7 @@ export const authReducer = (state = initialState, action) => {
     case REGISTER_USER_REQUEST:
     case GET_USER_PROFILE_REQUEST:
     case FIND_USER_BY_NAME_REQUEST:
+    // case GET_UNFOLLOWED_USERS_REQUEST:
       return { ...state, loading: true, error: null };
 
     case LOGIN_USER_SUCCESS:
@@ -90,7 +95,15 @@ export const authReducer = (state = initialState, action) => {
     case LOGIN_USER_FAILURE:
     case REGISTER_USER_FAILURE:
     case GET_USER_PROFILE_FAILURE:
+    case GET_UNFOLLOWED_USERS_FAILURE:
       return { ...state, loading: false, error: action.payload };
+
+    case GET_UNFOLLOWED_USERS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        unfollowedUsers: action.payload,
+      };
 
     case RESET_FIND_USER:
       return { ...state, findUser: null };

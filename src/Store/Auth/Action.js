@@ -16,6 +16,9 @@ import {
   FIND_USER_BY_NAME_SUCCESS,
   FIND_USER_BY_NAME_FAILURE,
   FIND_USER_BY_NAME_REQUEST,
+  GET_UNFOLLOWED_USERS_REQUEST,
+  GET_UNFOLLOWED_USERS_SUCCESS,
+  GET_UNFOLLOWED_USERS_FAILURE,
 } from "./ActionType";
 
 // Hàm lưu JWT vào localStorage
@@ -168,7 +171,6 @@ export const findUserByName = (fullName) => async (dispatch) => {
   }
 };
 
-
 // 🟢 Thay đổi thông tin người dùng
 export const updateUserProfile = (reqData) => async (dispatch) => {
   try {
@@ -202,6 +204,25 @@ export const followUserAction = (userId) => async (dispatch) => {
     });
   }
 }; 
+
+// 🟢 Lấy danh sách người dùng chưa follow
+export const getUnfollowedUsers = () => async (dispatch) => {
+  try {
+    dispatch({ type: GET_UNFOLLOWED_USERS_REQUEST });
+
+    const { data } = await api.get("/api/users/not-followed");
+    console.log("Unfollowed users:", data);
+
+    dispatch({ type: GET_UNFOLLOWED_USERS_SUCCESS, payload: data });
+  } catch (error) {
+    console.error("Get unfollowed users error:", error);
+
+    dispatch({
+      type: GET_UNFOLLOWED_USERS_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+};
 
 export const logout = () => (dispatch) => {
   localStorage.removeItem("jwt");

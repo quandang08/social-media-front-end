@@ -28,20 +28,17 @@ const TweetCard = ({ item }) => {
   const [tweet, setTweet] = useState(item);
   const currentUser = useSelector((state) => state.auth?.user);
 
-  console.log("item:", item);
-  console.log("currentUser:", currentUser);
-
   // Cập nhật isLiked mỗi khi item thay đổi
   useEffect(() => {
     if (!item) return;
-    setIsLiked(Boolean(item.liked)); 
+    setIsLiked(Boolean(item.liked));
     setLikeCount(item?.totalLikes || 0);
   }, [item, currentUser]);
 
-  //use Efferct Retweet
+  // Cập nhật retweet mỗi khi item thay đổi
   useEffect(() => {
     if (!item) return;
-    setIsRetweeted(Boolean(item.retwit)); 
+    setIsRetweeted(Boolean(item.retwit));
     setRetweetCount(item?.totalRetweets || 0);
   }, [item, currentUser]);
 
