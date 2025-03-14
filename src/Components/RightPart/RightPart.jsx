@@ -9,7 +9,7 @@ import { getUnfollowedUsers } from "../../Store/Auth/Action";
 
 const RightPart = () => {
   const dispatch = useDispatch();
-  const { auth } = useSelector((store) => store);
+  const auth = useSelector((state) => state.auth);
   // console.log("Auth State:", auth);
   const unfollowedUsers = useSelector((state) => state.auth.unfollowedUsers);
   const [showAll, setShowAll] = useState(false);

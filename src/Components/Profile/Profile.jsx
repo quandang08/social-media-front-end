@@ -54,7 +54,7 @@ const Profile = () => {
     ]).finally(() => setLoading(false));
   }, [id, dispatch]);
   
-  console.log("Update User State:", auth.updateUser);
+  // console.log("Update User State:", auth.updateUser);
   return (
     <div>
       {/* Header Section */}
