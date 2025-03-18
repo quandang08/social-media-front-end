@@ -19,6 +19,24 @@ import {
   GET_UNFOLLOWED_USERS_REQUEST,
   GET_UNFOLLOWED_USERS_SUCCESS,
   GET_UNFOLLOWED_USERS_FAILURE,
+
+  FETCH_NOTIFICATIONS_REQUEST,
+  FETCH_NOTIFICATIONS_SUCCESS,
+  FETCH_NOTIFICATIONS_FAILURE,
+  MARK_AS_READ_REQUEST,
+  MARK_AS_READ_SUCCESS,
+  MARK_AS_READ_FAILURE,
+  DELETE_NOTIFICATION_REQUEST,
+  DELETE_NOTIFICATION_SUCCESS,
+  DELETE_NOTIFICATION_FAILURE,
+  MARK_ALL_AS_READ_REQUEST,
+  MARK_ALL_AS_READ_SUCCESS,
+  MARK_ALL_AS_READ_FAILURE,
+  CREATE_NOTIFICATION_REQUEST,
+  CREATE_NOTIFICATION_SUCCESS,
+  CREATE_NOTIFICATION_FAILURE,
+  ADD_NOTIFICATION,
+  
 } from "./ActionType";
 
 // Hàm lưu JWT vào localStorage
@@ -219,6 +237,100 @@ export const getUnfollowedUsers = () => async (dispatch) => {
 
     dispatch({
       type: GET_UNFOLLOWED_USERS_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+};
+
+// 🟢 Tạo 1 notification
+export const createNotification = (notificationData) => async (dispatch, getState) => {
+  try {
+    // Bắt đầu request
+    dispatch({ type: CREATE_NOTIFICATION_REQUEST });
+
+    const token = getState().auth.jwt;
+    // Gọi API POST /api/notifications/create
+    const { data } = await api.post(`${API_BASE_URL}/api/notifications/create`, notificationData, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    dispatch({ type: CREATE_NOTIFICATION_SUCCESS, payload: data });
+
+    // Nếu muốn cập nhật luôn danh sách notifications trong Redux, có thể dispatch thêm:
+    dispatch({ type: ADD_NOTIFICATION, payload: data });
+
+  } catch (error) {
+    // Nếu lỗi
+    dispatch({
+      type: CREATE_NOTIFICATION_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+};
+
+// Lấy danh sách notifications của user
+export const fetchNotifications = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: FETCH_NOTIFICATIONS_REQUEST });
+    const token = getState().auth.jwt;
+    const { data } = await axios.get(`${API_BASE_URL}/api/notifications/`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    dispatch({ type: FETCH_NOTIFICATIONS_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: FETCH_NOTIFICATIONS_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+};
+
+// Đánh dấu một notification là đã đọc
+export const markNotificationAsRead = (notificationId) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: MARK_AS_READ_REQUEST });
+    const token = getState().auth.jwt;
+    const { data } = await api.put(`${API_BASE_URL}/api/notifications/${notificationId}/read`, null, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    dispatch({ type: MARK_AS_READ_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: MARK_AS_READ_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+};
+
+// Xóa một notification
+export const deleteNotification = (notificationId) => async (dispatch, getState) => {
+  try {
+    dispatch({ type: DELETE_NOTIFICATION_REQUEST });
+    const token = getState().auth.jwt;
+    await axios.delete(`${API_BASE_URL}/api/notifications/delete/${notificationId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    dispatch({ type: DELETE_NOTIFICATION_SUCCESS, payload: notificationId });
+  } catch (error) {
+    dispatch({
+      type: DELETE_NOTIFICATION_FAILURE,
+      payload: getErrorMessage(error),
+    });
+  }
+};
+
+// Đánh dấu tất cả notifications là đã đọc
+export const markAllNotificationsAsRead = () => async (dispatch, getState) => {
+  try {
+    dispatch({ type: MARK_ALL_AS_READ_REQUEST });
+    const token = getState().auth.jwt;
+    await axios.put(`${API_BASE_URL}/api/notifications/read-all`, null, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    dispatch({ type: MARK_ALL_AS_READ_SUCCESS });
+  } catch (error) {
+    dispatch({
+      type: MARK_ALL_AS_READ_FAILURE,
       payload: getErrorMessage(error),
     });
   }

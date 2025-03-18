@@ -15,9 +15,17 @@ import {
   FIND_USER_BY_NAME_REQUEST,
   FIND_USER_BY_NAME_SUCCESS,
   RESET_FIND_USER,
-  GET_UNFOLLOWED_USERS_REQUEST,
   GET_UNFOLLOWED_USERS_SUCCESS,
   GET_UNFOLLOWED_USERS_FAILURE,
+  FETCH_NOTIFICATIONS_SUCCESS,
+  FETCH_NOTIFICATIONS_FAILURE,
+  MARK_AS_READ_SUCCESS,
+  MARK_ALL_AS_READ_SUCCESS,
+  ADD_NOTIFICATION,
+  DELETE_NOTIFICATION_SUCCESS,
+  DELETE_ALL_NOTIFICATIONS_SUCCESS,
+  CREATE_NOTIFICATION_SUCCESS,
+  CREATE_NOTIFICATION_FAILURE,
 } from "./ActionType";
 
 const initialState = {
@@ -26,6 +34,7 @@ const initialState = {
   error: null,
   jwt: localStorage.getItem("jwt") || null,
   unfollowedUsers: [],
+  notifications: [],
 };
 
 export const authReducer = (state = initialState, action) => {
@@ -34,7 +43,7 @@ export const authReducer = (state = initialState, action) => {
     case REGISTER_USER_REQUEST:
     case GET_USER_PROFILE_REQUEST:
     case FIND_USER_BY_NAME_REQUEST:
-    // case GET_UNFOLLOWED_USERS_REQUEST:
+    // case FETCH_NOTIFICATIONS_REQUEST:
       return { ...state, loading: true, error: null };
 
     case LOGIN_USER_SUCCESS:
@@ -107,6 +116,68 @@ export const authReducer = (state = initialState, action) => {
 
     case RESET_FIND_USER:
       return { ...state, findUser: null };
+
+    case FETCH_NOTIFICATIONS_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        notifications: action.payload,
+      };
+
+    case FETCH_NOTIFICATIONS_FAILURE:
+      return { ...state, loading: false, error: action.payload };
+
+    /** ĐÁNH DẤU 1 THÔNG BÁO ĐÃ ĐỌC */
+    case MARK_AS_READ_SUCCESS:
+      return {
+        ...state,
+        notifications: state.notifications.map((notif) =>
+          notif.id === action.payload.id ? { ...notif, read: true } : notif
+        ),
+      };
+
+    /** ĐÁNH DẤU TẤT CẢ THÔNG BÁO ĐÃ ĐỌC */
+    case MARK_ALL_AS_READ_SUCCESS:
+      return {
+        ...state,
+        notifications: state.notifications.map((notif) => ({
+          ...notif,
+          read: true,
+        })),
+      };
+
+    /** THÊM THÔNG BÁO MỚI (WebSocket, Real-time) */
+    case ADD_NOTIFICATION:
+      return {
+        ...state,
+        notifications: [action.payload, ...state.notifications],
+      };
+
+      case CREATE_NOTIFICATION_SUCCESS:
+        return {
+          ...state,
+          loading: false,
+          notifications: [action.payload, ...state.notifications],
+        };
+        
+      case CREATE_NOTIFICATION_FAILURE:
+        return { ...state, loading: false, error: action.payload };
+
+    /** XÓA 1 THÔNG BÁO */
+    case DELETE_NOTIFICATION_SUCCESS:
+      return {
+        ...state,
+        notifications: state.notifications.filter(
+          (notif) => notif.id !== action.payload
+        ),
+      };
+
+    /** XÓA TẤT CẢ THÔNG BÁO */
+    case DELETE_ALL_NOTIFICATIONS_SUCCESS:
+      return {
+        ...state,
+        notifications: [],
+      };
 
     case LOGOUT:
       return initialState;

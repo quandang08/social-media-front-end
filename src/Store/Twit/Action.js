@@ -101,11 +101,14 @@ export const createReTweet = (twitId) => async (dispatch) => {
 
 export const likeTweet = (twitId) => async (dispatch) => {
   try {
-    const { data } = await api.post(`/api/${twitId}/likes`);
-    console.log("like tweet: ", data);
-    dispatch({ type: LIKE_TWEET_SUCCESS, payload: data });
+    const { response } = await api.post(`/api/${twitId}/likes`);
+    if(response && response.status === 200) {
+      dispatch({ type: LIKE_TWEET_SUCCESS, payload: response });
+    }else{
+      console.log("Like fail");
+    }
   } catch (error) {
-    console.log("catch error: ", error);
+    console.log("call api like fail: ", error);
     dispatch({ type: LIKE_TWEET_FAILURE, payload: error.message });
   }
 };
