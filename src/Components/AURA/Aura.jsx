@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaComments,
   FaTimes,
@@ -21,6 +21,13 @@ const Aura = () => {
   ]);
   const [input, setInput] = useState("");
 
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
+
   const sendMessage = () => {
     if (input.trim() === "") return;
     setMessages([
@@ -31,104 +38,214 @@ const Aura = () => {
   };
 
   return (
-    <div className="min-h-[130vh] flex items-start justify-center p-6 pt-20">
-      {/* Main Box */}
-      <div className="bg-white shadow-lg rounded-2xl p-6 max-w-2xl w-full relative z-50">
-        <h1 className="text-3xl font-bold text-gray-900 text-center mb-3">
-          AURA AI
-        </h1>
-        <p className="text-gray-600 text-center mb-5">
-          Explore the future of AI with sleek design and smooth interactions.
-        </p>
+    <div className="w-full h-full bg-white flex flex-col items-center relative overflow-hidden">
+      {/* Hero Section với hiệu ứng glass */}
+      <div className="w-full h-[100vh] bg-teal-400/30 backdrop-blur-md absolute top-0 left-0 z-0" />
 
-        {/* Input */}
-        <div className="flex items-center bg-gray-900 text-white rounded-full px-4 py-2">
-          {/* Buttons on the left */}
-          <button className="text-gray-400 hover:text-white">
-            <FaPlus size={18} />
-          </button>
-          <button className="ml-3 text-gray-400 hover:text-white">
-            <FaSearch size={18} />
-          </button>
-          <button className="ml-3 text-gray-400 hover:text-white">
-            <FaRobot size={18} />
-          </button>
-
-          {/* Input Field */}
-          <input
-            type="text"
-            placeholder="Nhập nội dung..."
-            className="bg-transparent flex-grow outline-none text-lg placeholder-gray-400 ml-3"
-          />
-
-          {/* Submit Button */}
-          <button className="text-gray-400 hover:text-white">⬆</button>
+      {/* Nội dung chính */}
+      <div className="relative z-10 w-full max-w-5xl mt-16 px-6 md:px-12">
+        <div className="text-center mb-10">
+          <h1 className="text-4xl font-extrabold text-teal-800 tracking-widest mb-3 drop-shadow-md">
+            AURA AI
+          </h1>
+          <p className="text-teal-900/80 text-lg max-w-xl mx-auto">
+            Experience a fresh and modern AI interface with a clean, bright look.
+          </p>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="
+            bg-white/80
+            backdrop-blur-md
+            border border-white/20
+            shadow-xl
+            rounded-2xl
+            p-6
+            max-w-3xl
+            mx-auto
+            flex flex-col
+            items-center
+            hover:bg-white/90
+            transition-all
+          "
+        >
+          <h2 className="text-2xl font-bold text-teal-700 mb-4 tracking-tight drop-shadow-sm">
+            Ask anything about the future of AI
+          </h2>
+          <div
+            className="
+              w-full
+              bg-gray-100/50
+              backdrop-blur-sm
+              rounded-full
+              px-4 py-2
+              flex items-center
+              gap-3
+              shadow-inner
+              border border-white/20
+            "
+          >
+            <button className="text-teal-600/80 hover:text-teal-700 transition-colors">
+              <FaPlus size={18} />
+            </button>
+            <button className="text-teal-600/80 hover:text-teal-700 transition-colors">
+              <FaSearch size={18} />
+            </button>
+            <button className="text-teal-600/80 hover:text-teal-700 transition-colors">
+              <FaRobot size={18} />
+            </button>
+
+            <input
+              type="text"
+              placeholder="Enter your question..."
+              className="bg-transparent flex-grow outline-none text-teal-900 placeholder-teal-600/60 text-base"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+            />
+            <button
+              onClick={sendMessage}
+              className="
+                bg-teal-500/90
+                hover:bg-teal-600
+                text-white
+                p-3
+                rounded-full
+                transition-all
+                shadow-md
+                backdrop-blur-sm
+                border border-white/20
+              "
+            >
+              <FaPaperPlane size={16} />
+            </button>
+          </div>
+        </motion.div>
       </div>
 
-      {/* Chat Bot */}
-      <div className="fixed bottom-5 right-5">
+      <div className="fixed bottom-6 right-6 z-50">
         <button
-          className="bg-blue-500 p-4 rounded-full text-white shadow-md hover:bg-blue-600 transition"
+          className="
+            bg-white/80
+            backdrop-blur-md
+            border border-white/20
+            p-4
+            rounded-full
+            text-teal-600
+            shadow-lg
+            hover:bg-white/90
+            hover:shadow-xl
+            transition-all
+          "
           onClick={() => setChatOpen(!chatOpen)}
         >
-          <FaComments size={28} />
+          <FaComments size={24} />
         </button>
-
-        <AnimatePresence>
-          {chatOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.3 }}
-              className="fixed bottom-20 right-4 max-w-[90vw] w-80 bg-white shadow-2xl rounded-lg border border-gray-300 z-50 flex flex-col"
-            >
-              <div className="bg-blue-500 text-white p-4 rounded-t-lg flex justify-between items-center">
-                <span className="font-semibold">Aura AI Chat</span>
-                <button
-                  onClick={() => setChatOpen(false)}
-                  className="focus:outline-none"
-                >
-                  <FaTimes />
-                </button>
-              </div>
-
-              <div className="h-60 overflow-y-auto p-4 space-y-2 flex flex-col">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={`p-2 rounded-lg text-white ${
-                      msg.sender === "user"
-                        ? "bg-blue-500 self-end"
-                        : "bg-gray-400 self-start"
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                ))}
-              </div>
-
-              <div className="p-3 border-t border-gray-300 flex items-center">
-                <input
-                  type="text"
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                  placeholder="Type a message..."
-                  className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-                <button
-                  onClick={sendMessage}
-                  className="ml-2 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
-                >
-                  <FaPaperPlane />
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
+
+      <AnimatePresence>
+        {chatOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 25 }}
+            transition={{ duration: 0.4 }}
+            className="
+              fixed
+              bottom-20
+              right-6
+              w-80
+              max-w-[90vw]
+              bg-white/80
+              backdrop-blur-lg
+              border border-white/20
+              shadow-2xl
+              rounded-2xl
+              flex flex-col
+              z-50
+              overflow-hidden
+              hover:bg-white/90
+              transition-all
+            "
+          >
+            <div className="bg-gradient-to-r from-teal-400/70 to-teal-500/70 backdrop-blur-md text-white p-4 flex justify-between items-center">
+              <span className="font-bold drop-shadow-sm">AURA AI Chat</span>
+              <button
+                onClick={() => setChatOpen(false)}
+                className="focus:outline-none hover:opacity-80 transition"
+              >
+                <FaTimes size={18} />
+              </button>
+            </div>
+
+            <div className="flex-grow overflow-y-auto p-4 space-y-3 bg-white/30">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`
+                    px-3 py-2
+                    rounded-lg
+                    backdrop-blur-sm
+                    w-fit
+                    max-w-[70%]
+                    border border-white/20
+                    ${
+                      msg.sender === "user"
+                        ? "bg-teal-100/80 text-teal-900 ml-auto"
+                        : "bg-gray-100/80 text-gray-900"
+                    }
+                  `}
+                >
+                  {msg.text}
+                </div>
+              ))}
+            </div>
+
+            <div className="p-3 border-t border-white/20 flex items-center bg-white/30">
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                placeholder="Type a message..."
+                className="
+                  flex-grow
+                  px-3 py-2
+                  rounded-full
+                  bg-white/80
+                  backdrop-blur-sm
+                  border border-white/20
+                  text-teal-900
+                  placeholder-teal-600/60
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-teal-400/50
+                "
+              />
+              <button
+                onClick={sendMessage}
+                className="
+                  ml-2
+                  bg-teal-500/90
+                  hover:bg-teal-600
+                  text-white
+                  p-3
+                  rounded-full
+                  transition-all
+                  shadow
+                  backdrop-blur-sm
+                  border border-white/20
+                "
+              >
+                <FaPaperPlane size={16} />
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
