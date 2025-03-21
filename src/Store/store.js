@@ -6,7 +6,6 @@ import tweetReducer from "./Twit/Reducer";
 const rootReducers = combineReducers({
     auth:authReducer,
     twit:tweetReducer,
-    
 });
 
 // ✅ Tạo store với middleware thunk

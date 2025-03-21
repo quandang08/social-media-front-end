@@ -1,6 +1,9 @@
 import axios from "axios";
 import { api, API_BASE_URL } from "../../config/api";
 import {
+  GET_ALL_USER_REQUEST,
+  GET_ALL_USER_SUCCESS,
+  GET_ALL_USER_FAILURE,
   GET_USER_PROFILE_FAILURE,
   GET_USER_PROFILE_SUCCESS,
   LOGIN_USER_FAILURE,
@@ -19,7 +22,6 @@ import {
   GET_UNFOLLOWED_USERS_REQUEST,
   GET_UNFOLLOWED_USERS_SUCCESS,
   GET_UNFOLLOWED_USERS_FAILURE,
-
   FETCH_NOTIFICATIONS_REQUEST,
   FETCH_NOTIFICATIONS_SUCCESS,
   FETCH_NOTIFICATIONS_FAILURE,
@@ -36,7 +38,21 @@ import {
   CREATE_NOTIFICATION_SUCCESS,
   CREATE_NOTIFICATION_FAILURE,
   ADD_NOTIFICATION,
-  
+  SEND_MESSAGE_REQUEST,
+  SEND_MESSAGE_SUCCESS,
+  SEND_MESSAGE_FAILURE,
+  FETCH_CHAT_HISTORY_REQUEST,
+  FETCH_CHAT_HISTORY_SUCCESS,
+  FETCH_CHAT_HISTORY_FAILURE,
+  EDIT_MESSAGE_REQUEST,
+  EDIT_MESSAGE_SUCCESS,
+  EDIT_MESSAGE_FAILURE,
+  DELETE_MESSAGE_REQUEST,
+  DELETE_MESSAGE_SUCCESS,
+  DELETE_MESSAGE_FAILURE,
+  MARK_MESSAGE_AS_READ_REQUEST,
+  MARK_MESSAGE_AS_READ_SUCCESS,
+  MARK_MESSAGE_AS_READ_FAILURE,
 } from "./ActionType";
 
 // Hàm lưu JWT vào localStorage
@@ -127,6 +143,20 @@ export const registerUser = (registerData) => async (dispatch) => {
   }
 };
 
+export const getAllUsers = () => async (dispatch) => {
+  // dispatch({ type: GET_ALL_USER_REQUEST });
+
+  try {
+    const response = await api.get("/api/users/all");
+    dispatch({ type: GET_ALL_USER_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({
+      type: GET_ALL_USER_FAILURE,
+      payload: error.response?.data || "Error fetching users",
+    });
+  }
+};
+
 // 🟢 Lấy thông tin người dùng
 export const getUserProfile = () => async (dispatch) => {
   const jwt = getJWT();
@@ -156,10 +186,9 @@ export const getUserProfile = () => async (dispatch) => {
 // 🟢 Tim User theo ID
 export const findUserById = (userId) => async (dispatch) => {
   try {
-    const { data } = await api.get(`/api/users/${userId}`)
-    console.log("find user id: ",data);
+    const { data } = await api.get(`/api/users/${userId}`);
+    console.log("find user id: ", data);
     dispatch({ type: FIND_USER_BY_ID_SUCCESS, payload: data });
-
   } catch (error) {
     console.error("Search Id failure:", error);
 
@@ -192,10 +221,9 @@ export const findUserByName = (fullName) => async (dispatch) => {
 // 🟢 Thay đổi thông tin người dùng
 export const updateUserProfile = (reqData) => async (dispatch) => {
   try {
-    const { data } = await api.put(`/api/users/update`, reqData)
+    const { data } = await api.put(`/api/users/update`, reqData);
     console.log("updated user", data);
     dispatch({ type: UPDATE_USER_SUCCESS, payload: data });
-
   } catch (error) {
     console.error("error: ", error);
 
@@ -209,10 +237,9 @@ export const updateUserProfile = (reqData) => async (dispatch) => {
 // 🟢 Theo dõi người dùng theo ID
 export const followUserAction = (userId) => async (dispatch) => {
   try {
-    const { data } = await api.put(`/api/users/${userId}/follow`)
+    const { data } = await api.put(`/api/users/${userId}/follow`);
     console.log("followed user", data);
     dispatch({ type: FOLLOW_USER_SUCCESS, payload: data });
-
   } catch (error) {
     console.error("error: ", error);
 
@@ -221,7 +248,7 @@ export const followUserAction = (userId) => async (dispatch) => {
       payload: getErrorMessage(error),
     });
   }
-}; 
+};
 
 // 🟢 Lấy danh sách người dùng chưa follow
 export const getUnfollowedUsers = () => async (dispatch) => {
@@ -243,30 +270,34 @@ export const getUnfollowedUsers = () => async (dispatch) => {
 };
 
 // 🟢 Tạo 1 notification
-export const createNotification = (notificationData) => async (dispatch, getState) => {
-  try {
-    // Bắt đầu request
-    dispatch({ type: CREATE_NOTIFICATION_REQUEST });
+export const createNotification =
+  (notificationData) => async (dispatch, getState) => {
+    try {
+      // Bắt đầu request
+      dispatch({ type: CREATE_NOTIFICATION_REQUEST });
 
-    const token = getState().auth.jwt;
-    // Gọi API POST /api/notifications/create
-    const { data } = await api.post(`${API_BASE_URL}/api/notifications/create`, notificationData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+      const token = getState().auth.jwt;
+      // Gọi API POST /api/notifications/create
+      const { data } = await api.post(
+        `${API_BASE_URL}/api/notifications/create`,
+        notificationData,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-    dispatch({ type: CREATE_NOTIFICATION_SUCCESS, payload: data });
+      dispatch({ type: CREATE_NOTIFICATION_SUCCESS, payload: data });
 
-    // Nếu muốn cập nhật luôn danh sách notifications trong Redux, có thể dispatch thêm:
-    dispatch({ type: ADD_NOTIFICATION, payload: data });
-
-  } catch (error) {
-    // Nếu lỗi
-    dispatch({
-      type: CREATE_NOTIFICATION_FAILURE,
-      payload: getErrorMessage(error),
-    });
-  }
-};
+      // Nếu muốn cập nhật luôn danh sách notifications trong Redux, có thể dispatch thêm:
+      dispatch({ type: ADD_NOTIFICATION, payload: data });
+    } catch (error) {
+      // Nếu lỗi
+      dispatch({
+        type: CREATE_NOTIFICATION_FAILURE,
+        payload: getErrorMessage(error),
+      });
+    }
+  };
 
 // Lấy danh sách notifications của user
 export const fetchNotifications = () => async (dispatch, getState) => {
@@ -286,38 +317,47 @@ export const fetchNotifications = () => async (dispatch, getState) => {
 };
 
 // Đánh dấu một notification là đã đọc
-export const markNotificationAsRead = (notificationId) => async (dispatch, getState) => {
-  try {
-    dispatch({ type: MARK_AS_READ_REQUEST });
-    const token = getState().auth.jwt;
-    const { data } = await api.put(`${API_BASE_URL}/api/notifications/${notificationId}/read`, null, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    dispatch({ type: MARK_AS_READ_SUCCESS, payload: data });
-  } catch (error) {
-    dispatch({
-      type: MARK_AS_READ_FAILURE,
-      payload: getErrorMessage(error),
-    });
-  }
-};
+export const markNotificationAsRead =
+  (notificationId) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: MARK_AS_READ_REQUEST });
+      const token = getState().auth.jwt;
+      const { data } = await api.put(
+        `${API_BASE_URL}/api/notifications/${notificationId}/read`,
+        null,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      dispatch({ type: MARK_AS_READ_SUCCESS, payload: data });
+    } catch (error) {
+      dispatch({
+        type: MARK_AS_READ_FAILURE,
+        payload: getErrorMessage(error),
+      });
+    }
+  };
 
 // Xóa một notification
-export const deleteNotification = (notificationId) => async (dispatch, getState) => {
-  try {
-    dispatch({ type: DELETE_NOTIFICATION_REQUEST });
-    const token = getState().auth.jwt;
-    await axios.delete(`${API_BASE_URL}/api/notifications/delete/${notificationId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    dispatch({ type: DELETE_NOTIFICATION_SUCCESS, payload: notificationId });
-  } catch (error) {
-    dispatch({
-      type: DELETE_NOTIFICATION_FAILURE,
-      payload: getErrorMessage(error),
-    });
-  }
-};
+export const deleteNotification =
+  (notificationId) => async (dispatch, getState) => {
+    try {
+      dispatch({ type: DELETE_NOTIFICATION_REQUEST });
+      const token = getState().auth.jwt;
+      await axios.delete(
+        `${API_BASE_URL}/api/notifications/delete/${notificationId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      dispatch({ type: DELETE_NOTIFICATION_SUCCESS, payload: notificationId });
+    } catch (error) {
+      dispatch({
+        type: DELETE_NOTIFICATION_FAILURE,
+        payload: getErrorMessage(error),
+      });
+    }
+  };
 
 // Đánh dấu tất cả notifications là đã đọc
 export const markAllNotificationsAsRead = () => async (dispatch, getState) => {
@@ -332,6 +372,89 @@ export const markAllNotificationsAsRead = () => async (dispatch, getState) => {
     dispatch({
       type: MARK_ALL_AS_READ_FAILURE,
       payload: getErrorMessage(error),
+    });
+  }
+};
+
+// Gửi tin nhắn sử dụng instance api
+export const sendMessage = (senderId, receiverId, content, messageType) => async (dispatch, getState) => {
+  dispatch({ type: SEND_MESSAGE_REQUEST });
+  try {
+    const response = await api.post("/api/messages/send", {
+      senderId,
+      receiverId,
+      content,
+      messageType,
+    });
+    dispatch({ type: SEND_MESSAGE_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({
+      type: SEND_MESSAGE_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+// Lấy lịch sử chat giữa 2 user sử dụng instance api
+export const fetchChatHistory = (userA, userB) => async (dispatch) => {
+  dispatch({ type: FETCH_CHAT_HISTORY_REQUEST });
+  try {
+    const response = await api.get("/api/messages/history", {
+      params: { userA, userB },
+    });
+    dispatch({ type: FETCH_CHAT_HISTORY_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({
+      type: FETCH_CHAT_HISTORY_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+// Sửa tin nhắn sử dụng instance api
+export const editMessage = (messageId, newContent) => async (dispatch, getState) => {
+  dispatch({ type: EDIT_MESSAGE_REQUEST });
+  try {
+    const response = await api.put(`/api/messages/${messageId}`, { content: newContent });
+    dispatch({ type: EDIT_MESSAGE_SUCCESS, payload: response.data });
+  } catch (error) {
+    dispatch({
+      type: EDIT_MESSAGE_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+// Xóa tin nhắn sử dụng instance api
+export const deleteMessage = (messageId) => async (dispatch, getState) => {
+  dispatch({ type: DELETE_MESSAGE_REQUEST });
+  try {
+    await api.delete(`/api/messages/${messageId}`);
+    dispatch({ type: DELETE_MESSAGE_SUCCESS, payload: messageId });
+  } catch (error) {
+    dispatch({
+      type: DELETE_MESSAGE_FAILURE,
+      payload: error.response?.data?.message || error.message,
+    });
+  }
+};
+
+
+// Đánh dấu tin nhắn đã đọc
+export const markMessageAsRead = (messageId) => async (dispatch, getState) => {
+  dispatch({ type: MARK_MESSAGE_AS_READ_REQUEST });
+  try {
+    const token = getState().auth.jwt;
+    const { data } = await axios.put(
+      `${API_BASE_URL}/api/messages/${messageId}/read`,
+      null,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    dispatch({ type: MARK_MESSAGE_AS_READ_SUCCESS, payload: data });
+  } catch (error) {
+    dispatch({
+      type: MARK_MESSAGE_AS_READ_FAILURE,
+      payload: error.response?.data?.message || error.message,
     });
   }
 };
