@@ -215,6 +215,8 @@ const HomeSection = () => {
           <p>No tweets found.</p>
         )}
       </section>
+
+      
     </div>
   );
 };

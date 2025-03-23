@@ -6,6 +6,7 @@ import { Button } from "@mui/material";
 import SubscriptionModal from "../SubscriptionModal/SubscriptionModal";
 import { useDispatch, useSelector } from "react-redux";
 import { getUnfollowedUsers } from "../../Store/Auth/Action";
+import ChatBubble from "../AURA/ChatBubble";
 
 const RightPart = () => {
   const dispatch = useDispatch();
@@ -145,6 +146,7 @@ const RightPart = () => {
       <section>
         <SubscriptionModal open={isModalOpen} handleClose={handleCloseModal} />
       </section>
+      <ChatBubble />
     </div>
   );
 };
