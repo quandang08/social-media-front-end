@@ -1,49 +1,88 @@
-import React, { useState, useEffect } from "react";
-import {
-  FaComments,
-  FaTimes,
-  FaPaperPlane,
-  FaPlus,
-  FaSearch,
-  FaRobot,
-} from "react-icons/fa";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useState, useEffect, useRef } from "react";
+import { FaComments, FaPaperPlane } from "react-icons/fa";
+import { motion } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchExplanation } from "../../Store/Auth/Action";
+import ChatBubble from "./ChatBubble";
 
 const Aura = () => {
+  const dispatch = useDispatch();
+
+  // Lấy dữ liệu từ Redux
+  const { explanation, loading, error } = useSelector((state) => ({
+    explanation: state.auth.explanation,
+    loading: state.auth.loading,
+    error: state.auth.error,
+  }));
+
+  // State
   const [chatOpen, setChatOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    { id: 1, text: "Hello! How can I assist you today?", sender: "bot" },
-    {
-      id: 2,
-      text: "AI is transforming the future. What do you think?",
-      sender: "bot",
-    },
-  ]);
-  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [inputMain, setInputMain] = useState("");   // <== Ô nhập ở hero
+  const [inputBubble, setInputBubble] = useState(""); // <== Ô nhập ở bong bóng
 
+  const messagesEndRef = useRef(null);
+
+  // Khi có explanation mới
   useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "auto";
-    };
-  }, []);
+    if (explanation && !loading) {
+      setMessages((prev) => [
+        ...prev.filter((m) => !m.isTemp),
+        { id: Date.now(), text: explanation.content || explanation, sender: "bot" },
+      ]);
+    }
+  }, [explanation, loading]);
 
-  const sendMessage = () => {
-    if (input.trim() === "") return;
-    setMessages([
-      ...messages,
-      { id: messages.length + 1, text: input, sender: "user" },
-    ]);
-    setInput("");
+  // Khi có error
+  useEffect(() => {
+    if (error) {
+      setMessages((prev) => [
+        ...prev.filter((m) => !m.isTemp),
+        { id: Date.now(), text: `Lỗi: ${error}`, sender: "bot", isError: true },
+      ]);
+    }
+  }, [error]);
+
+  // Cuộn xuống đáy khi có tin nhắn
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Gửi tin nhắn (chung cho hero & bubble)
+  const sendMessage = async (text, isBubble) => {
+    if (!text.trim() || loading) return;
+
+    const userMsg = { id: Date.now(), text, sender: "user" };
+    const tempMsg = {
+      id: `temp-${Date.now()}`,
+      text: "AURA đang suy nghĩ...",
+      sender: "bot",
+      isTemp: true,
+    };
+
+    setMessages((prev) => [...prev, userMsg, tempMsg]);
+
+    // Reset input tương ứng
+    if (isBubble) {
+      setInputBubble("");
+    } else {
+      setInputMain("");
+    }
+
+    try {
+      await dispatch(fetchExplanation(text));
+    } catch (err) {
+      // Lỗi đã xử lý trong useEffect
+    }
   };
 
   return (
-    <div className="w-full h-full bg-white flex flex-col items-center relative overflow-hidden">
-      {/* Hero Section với hiệu ứng glass */}
-      <div className="w-full h-[100vh] bg-teal-400/30 backdrop-blur-md absolute top-0 left-0 z-0" />
+    <div className="w-full h-full bg-white relative overflow-hidden">
+      {/* Nền mờ */}
+      <div className="absolute inset-0 bg-teal-400/30 backdrop-blur-md -z-10" />
 
-      {/* Nội dung chính */}
-      <div className="relative z-10 w-full max-w-5xl mt-16 px-6 md:px-12">
+      {/* ========== HERO SECTION ========== */}
+      <div className="relative z-10 w-full max-w-5xl mx-auto mt-16 px-6 md:px-12">
         <div className="text-center mb-10">
           <h1 className="text-4xl font-extrabold text-teal-800 tracking-widest mb-3 drop-shadow-md">
             AURA AI
@@ -53,199 +92,77 @@ const Aura = () => {
           </p>
         </div>
 
+        {/* Card hero chứa danh sách tin nhắn + ô nhập */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="
-            bg-white/80
-            backdrop-blur-md
-            border border-white/20
-            shadow-xl
-            rounded-2xl
-            p-6
-            max-w-3xl
-            mx-auto
-            flex flex-col
-            items-center
-            hover:bg-white/90
-            transition-all
-          "
+          className="bg-white/80 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl p-6 max-w-3xl mx-auto hover:bg-white/90 transition-all"
         >
-          <h2 className="text-2xl font-bold text-teal-700 mb-4 tracking-tight drop-shadow-sm">
-            Ask anything about the future of AI
-          </h2>
-          <div
-            className="
-              w-full
-              bg-gray-100/50
-              backdrop-blur-sm
-              rounded-full
-              px-4 py-2
-              flex items-center
-              gap-3
-              shadow-inner
-              border border-white/20
-            "
-          >
-            <button className="text-teal-600/80 hover:text-teal-700 transition-colors">
-              <FaPlus size={18} />
-            </button>
-            <button className="text-teal-600/80 hover:text-teal-700 transition-colors">
-              <FaSearch size={18} />
-            </button>
-            <button className="text-teal-600/80 hover:text-teal-700 transition-colors">
-              <FaRobot size={18} />
-            </button>
+          {/* Danh sách tin nhắn hero */}
+          <div className="h-[300px] overflow-y-auto mb-4 p-3 border border-white/30 rounded-md">
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={`mb-2 px-3 py-2 rounded-md w-fit max-w-[70%]
+                  ${msg.sender === "user" ? "ml-auto bg-teal-100" : "bg-gray-100"}
+                  ${msg.isError ? "bg-red-100 text-red-600" : ""}
+                  ${msg.isTemp ? "opacity-75 italic" : ""}
+                `}
+              >
+                {msg.text}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
 
+          {/* Ô nhập hero */}
+          <div className="flex items-center gap-3 bg-gray-100/50 px-4 py-2 rounded-full shadow-inner border border-white/20">
             <input
               type="text"
               placeholder="Enter your question..."
               className="bg-transparent flex-grow outline-none text-teal-900 placeholder-teal-600/60 text-base"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+              value={inputMain}
+              onChange={(e) => setInputMain(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && sendMessage(inputMain, false)}
+              disabled={loading}
             />
             <button
-              onClick={sendMessage}
-              className="
-                bg-teal-500/90
-                hover:bg-teal-600
-                text-white
-                p-3
-                rounded-full
-                transition-all
-                shadow-md
-                backdrop-blur-sm
-                border border-white/20
-              "
+              onClick={() => sendMessage(inputMain, false)}
+              disabled={loading}
+              className={`
+                bg-teal-500/90 p-3 rounded-full transition-all shadow-md
+                backdrop-blur-sm border border-white/20
+                ${loading ? "opacity-50 cursor-not-allowed" : "hover:bg-teal-600"}
+              `}
             >
-              <FaPaperPlane size={16} />
+              <FaPaperPlane size={16} className="text-white" />
             </button>
           </div>
         </motion.div>
       </div>
 
+      {/* ========== NÚT MỞ BONG BÓNG CHAT ========== */}
       <div className="fixed bottom-6 right-6 z-50">
         <button
-          className="
-            bg-white/80
-            backdrop-blur-md
-            border border-white/20
-            p-4
-            rounded-full
-            text-teal-600
-            shadow-lg
-            hover:bg-white/90
-            hover:shadow-xl
-            transition-all
-          "
+          className="bg-white p-4 rounded-full text-teal-600 shadow-lg hover:bg-gray-100 transition-all"
           onClick={() => setChatOpen(!chatOpen)}
         >
           <FaComments size={24} />
         </button>
       </div>
 
-      <AnimatePresence>
-        {chatOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 25 }}
-            transition={{ duration: 0.4 }}
-            className="
-              fixed
-              bottom-20
-              right-6
-              w-80
-              max-w-[90vw]
-              bg-white/80
-              backdrop-blur-lg
-              border border-white/20
-              shadow-2xl
-              rounded-2xl
-              flex flex-col
-              z-50
-              overflow-hidden
-              hover:bg-white/90
-              transition-all
-            "
-          >
-            <div className="bg-gradient-to-r from-teal-400/70 to-teal-500/70 backdrop-blur-md text-white p-4 flex justify-between items-center">
-              <span className="font-bold drop-shadow-sm">AURA AI Chat</span>
-              <button
-                onClick={() => setChatOpen(false)}
-                className="focus:outline-none hover:opacity-80 transition"
-              >
-                <FaTimes size={18} />
-              </button>
-            </div>
-
-            <div className="flex-grow overflow-y-auto p-4 space-y-3 bg-white/30">
-              {messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`
-                    px-3 py-2
-                    rounded-lg
-                    backdrop-blur-sm
-                    w-fit
-                    max-w-[70%]
-                    border border-white/20
-                    ${
-                      msg.sender === "user"
-                        ? "bg-teal-100/80 text-teal-900 ml-auto"
-                        : "bg-gray-100/80 text-gray-900"
-                    }
-                  `}
-                >
-                  {msg.text}
-                </div>
-              ))}
-            </div>
-
-            <div className="p-3 border-t border-white/20 flex items-center bg-white/30">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-                placeholder="Type a message..."
-                className="
-                  flex-grow
-                  px-3 py-2
-                  rounded-full
-                  bg-white/80
-                  backdrop-blur-sm
-                  border border-white/20
-                  text-teal-900
-                  placeholder-teal-600/60
-                  focus:outline-none
-                  focus:ring-2
-                  focus:ring-teal-400/50
-                "
-              />
-              <button
-                onClick={sendMessage}
-                className="
-                  ml-2
-                  bg-teal-500/90
-                  hover:bg-teal-600
-                  text-white
-                  p-3
-                  rounded-full
-                  transition-all
-                  shadow
-                  backdrop-blur-sm
-                  border border-white/20
-                "
-              >
-                <FaPaperPlane size={16} />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* ========== Bong bóng chat ========== */}
+      <ChatBubble
+        chatOpen={chatOpen}
+        setChatOpen={setChatOpen}
+        messages={messages}
+        sendMessage={sendMessage}
+        inputBubble={inputBubble}
+        setInputBubble={setInputBubble}
+        loading={loading}
+        messagesEndRef={messagesEndRef}
+      />
     </div>
   );
 };
