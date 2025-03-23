@@ -53,6 +53,9 @@ import {
   MARK_MESSAGE_AS_READ_REQUEST,
   MARK_MESSAGE_AS_READ_SUCCESS,
   MARK_MESSAGE_AS_READ_FAILURE,
+  FETCH_EXPLANATION_REQUEST,
+  FETCH_EXPLANATION_SUCCESS,
+  FETCH_EXPLANATION_FAILURE,
 } from "./ActionType";
 
 // Hàm lưu JWT vào localStorage
@@ -376,7 +379,7 @@ export const markAllNotificationsAsRead = () => async (dispatch, getState) => {
   }
 };
 
-// Gửi tin nhắn sử dụng instance api
+// Gửi tin nhắn sử dụng
 export const sendMessage = (senderId, receiverId, content, messageType) => async (dispatch, getState) => {
   dispatch({ type: SEND_MESSAGE_REQUEST });
   try {
@@ -395,7 +398,7 @@ export const sendMessage = (senderId, receiverId, content, messageType) => async
   }
 };
 
-// Lấy lịch sử chat giữa 2 user sử dụng instance api
+// Lấy lịch sử chat giữa 2 user
 export const fetchChatHistory = (userA, userB) => async (dispatch) => {
   dispatch({ type: FETCH_CHAT_HISTORY_REQUEST });
   try {
@@ -411,7 +414,7 @@ export const fetchChatHistory = (userA, userB) => async (dispatch) => {
   }
 };
 
-// Sửa tin nhắn sử dụng instance api
+// Sửa tin nhắn
 export const editMessage = (messageId, newContent) => async (dispatch, getState) => {
   dispatch({ type: EDIT_MESSAGE_REQUEST });
   try {
@@ -425,7 +428,7 @@ export const editMessage = (messageId, newContent) => async (dispatch, getState)
   }
 };
 
-// Xóa tin nhắn sử dụng instance api
+// Xóa tin nhắn
 export const deleteMessage = (messageId) => async (dispatch, getState) => {
   dispatch({ type: DELETE_MESSAGE_REQUEST });
   try {
@@ -438,7 +441,6 @@ export const deleteMessage = (messageId) => async (dispatch, getState) => {
     });
   }
 };
-
 
 // Đánh dấu tin nhắn đã đọc
 export const markMessageAsRead = (messageId) => async (dispatch, getState) => {
@@ -456,6 +458,25 @@ export const markMessageAsRead = (messageId) => async (dispatch, getState) => {
       type: MARK_MESSAGE_AS_READ_FAILURE,
       payload: error.response?.data?.message || error.message,
     });
+  }
+};
+
+export const fetchExplanation = (topic) => async (dispatch) => {
+  dispatch({ type: FETCH_EXPLANATION_REQUEST });
+  try {
+    const response = await api.get(`/api/aura/explain?topic=${encodeURIComponent(topic)}`);
+    dispatch({
+      type: FETCH_EXPLANATION_SUCCESS,
+      payload: response.data
+    });
+    return response.data; 
+  } catch (error) {
+    const errorMessage = error.response?.data?.message || "Lỗi không xác định";
+    dispatch({
+      type: FETCH_EXPLANATION_FAILURE,
+      payload: errorMessage
+    });
+    throw errorMessage; // Throw error để xử lý trong component
   }
 };
 

@@ -26,10 +26,6 @@ import {
   DELETE_ALL_NOTIFICATIONS_SUCCESS,
   CREATE_NOTIFICATION_SUCCESS,
   CREATE_NOTIFICATION_FAILURE,
-  SEND_MESSAGE_REQUEST,
-  FETCH_CHAT_HISTORY_REQUEST,
-  EDIT_MESSAGE_REQUEST,
-  DELETE_MESSAGE_REQUEST,
   MARK_MESSAGE_AS_READ_REQUEST,
   MARK_MESSAGE_AS_READ_SUCCESS,
   SEND_MESSAGE_FAILURE,
@@ -44,6 +40,9 @@ import {
   GET_ALL_USER_REQUEST,
   GET_ALL_USER_SUCCESS,
   GET_ALL_USER_FAILURE,
+  FETCH_EXPLANATION_REQUEST,
+  FETCH_EXPLANATION_SUCCESS,
+  FETCH_EXPLANATION_FAILURE,
 } from "./ActionType";
 
 const initialState = {
@@ -55,6 +54,7 @@ const initialState = {
   unfollowedUsers: [],
   notifications: [],
   messages: [],
+  explanation: null,
 };
 
 export const authReducer = (state = initialState, action) => {
@@ -67,6 +67,12 @@ export const authReducer = (state = initialState, action) => {
     case MARK_MESSAGE_AS_READ_REQUEST:
       return { ...state, loading: true, error: null };
 
+    case FETCH_EXPLANATION_REQUEST:
+      return {
+        ...state,
+        error: null,
+        explanation: null,
+      };
     case LOGIN_USER_SUCCESS:
     case REGISTER_USER_SUCCESS:
       localStorage.setItem("jwt", action.payload.jwt);
@@ -256,6 +262,21 @@ export const authReducer = (state = initialState, action) => {
     case DELETE_MESSAGE_FAILURE:
     case MARK_MESSAGE_AS_READ_FAILURE:
       return { ...state, loading: false, error: action.payload };
+
+    case FETCH_EXPLANATION_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        explanation: action.payload,
+      };
+
+    case FETCH_EXPLANATION_FAILURE:
+      return {
+        ...state,
+        loading: false,
+        error: action.payload,
+      };
     case LOGOUT:
       return initialState;
 
