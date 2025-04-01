@@ -2,10 +2,9 @@ import React, { memo } from 'react';
 import PropTypes from 'prop-types';
 
 const UserCard = memo(({ user, isFollowing, onFollow, onClick }) => {
-  // Hàm trích xuất phần tên email trước @
   const getEmailName = (email) => {
     if (!email) return '';
-    return "@"+ email.split('@')[0]; // Lấy phần trước ký tự @
+    return "@"+ email.split('@')[0];
   };
 
   return (
@@ -19,7 +18,7 @@ const UserCard = memo(({ user, isFollowing, onFollow, onClick }) => {
         />
         <div>
           <h2 className="text-lg font-semibold">{user.fullName}</h2>
-          {/* Hiển thị phần tên email thay vì bio */}
+          {/* Hiển thị phần tên email */}
           <p className="text-gray-500 text-sm">
             {getEmailName(user.email)}
           </p>
@@ -47,8 +46,8 @@ UserCard.propTypes = {
     id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     image: PropTypes.string,
     fullName: PropTypes.string.isRequired,
-    email: PropTypes.string, // Thêm propType cho email
-    bio: PropTypes.string // Vẫn giữ lại nếu cần dùng ở nơi khác
+    email: PropTypes.string,
+    bio: PropTypes.string
   }).isRequired,
   isFollowing: PropTypes.bool.isRequired,
   onFollow: PropTypes.func.isRequired,

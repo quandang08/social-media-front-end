@@ -1,68 +1,58 @@
 import { create } from "zustand";
+import { nanoid } from "nanoid";
 
 const useChatStore = create((set, get) => ({
-  // State
   chatOpen: false,
   messages: [],
   inputMain: "",
   inputBubble: "",
   loading: false,
   
-  // Actions
+  // Tối ưu: Gộp set input
+  setInput: (type, text) => set({ [`input${type}`]: text }),
+  
   setChatOpen: (open) => set({ chatOpen: open }),
   
-  setInputMain: (text) => set({ inputMain: text }),
-  setInputBubble: (text) => set({ inputBubble: text }),
-  
-  addMessage: (message) => set((state) => ({ 
-    messages: [...state.messages, message] 
+  // Tối ưu: Thêm timestamp và nanoid
+  addMessage: (message) => set((state) => ({
+    messages: [...state.messages, {
+      ...message,
+      id: nanoid(),
+      timestamp: Date.now()
+    }]
   })),
   
   sendMessage: async (text, isBubble) => {
-    if (!text.trim() || get().loading) return;
+    if (!text.trim() || get().loading) return null;
     
     // Clear input
-    if (isBubble) set({ inputBubble: "" });
-    else set({ inputMain: "" });
+    set({ [`input${isBubble ? 'Bubble' : 'Main'}`]: "" });
     
-    // Add user message
-    set((state) => ({
+    // Tối ưu: Chỉ set state 1 lần
+    set({
       messages: [
-        ...state.messages,
-        { id: Date.now(), text, sender: "user" }
-      ]
-    }));
-    
-    // Add temporary bot message
-    set((state) => ({
-      messages: [
-        ...state.messages,
-        {
-          id: `temp-${Date.now()}`,
-          text: "AURA đang suy nghĩ...",
-          sender: "bot",
-          isTemp: true
-        }
+        ...get().messages,
+        { id: nanoid(), text, sender: "user" },
+        { id: `temp-${nanoid()}`, text: "AURA đang suy nghĩ...", sender: "bot", isTemp: true }
       ],
       loading: true
-    }));
+    });
     
-    return text; // Return text để xử lý API call bên ngoài
+    return text;
   },
   
   finalizeMessage: (text, isError = false) => {
-    set((state) => ({
-      messages: [
-        ...state.messages.filter(msg => !msg.isTemp),
-        {
-          id: Date.now(),
+    set({
+      messages: get().messages
+        .filter(msg => !msg.isTemp)
+        .concat({
+          id: nanoid(),
           text: isError ? `Lỗi: ${text}` : text,
           sender: "bot",
           ...(isError && { isError: true })
-        }
-      ],
+        }),
       loading: false
-    }));
+    });
   }
 }));
 
