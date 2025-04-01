@@ -1,78 +1,80 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { FaCog, FaSearch, FaTimes } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { findUserByName, followUserAction } from "../../Store/Auth/Action";
 import { debounce } from "lodash";
 import { useNavigate } from "react-router-dom";
+import UserCard from "./UserCard";
+
+const Loading = () => <p className="text-gray-500 mt-4">Loading...</p>;
+const ErrorMessage = ({ error }) => <p className="text-red-500 mt-4">{error}</p>;
 
 const Explore = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {
-    findUser = [],
-    loading,
-    error,
-    searchQuery,
-    user,
-  } = useSelector((state) => state.auth);
+  const { findUser, loading, error, searchQuery, user } = useSelector(
+    (state) => state.auth
+  );
+  
   const [searchTerm, setSearchTerm] = useState(searchQuery || "");
-  const filteredUsers = Array.isArray(findUser)
-  ? findUser.filter((foundUser) => foundUser.id !== user.id)
-  : [];
-
-
   const [localFollowing, setLocalFollowing] = useState(
     new Set(user?.following || [])
   );
 
-  const debouncedSearch = debounce((query) => {
-    if (query.trim().length >= 1) {
-      dispatch(findUserByName(query));
-    }
-  }, 500);
+  const filteredUsers = useMemo(
+    () =>
+      Array.isArray(findUser)
+        ? findUser.filter((foundUser) => foundUser.id !== user?.id)
+        : [],
+    [findUser, user?.id]
+  );
+
+  const debouncedSearch = useMemo(
+    () =>
+      debounce((query) => {
+        if (query.trim().length >= 1) dispatch(findUserByName(query));
+      }, 500),
+    [dispatch]
+  );
 
   useEffect(() => {
-    debouncedSearch(searchTerm);
+    if (searchTerm.trim() !== searchQuery) {
+      debouncedSearch(searchTerm);
+    }
     return () => debouncedSearch.cancel();
-  }, [searchTerm]);
+  }, [searchTerm, searchQuery, debouncedSearch]);
 
   useEffect(() => {
-    // Cập nhật lại danh sách following khi Redux store thay đổi
     setLocalFollowing(new Set(user?.following || []));
-  }, [user]);
+  }, [user?.following]);
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  const handleSearch = useCallback((e) => setSearchTerm(e.target.value), []);
 
-  const handleUserClick = (userId) => {
-    navigate(`/profile/${userId}`);
-  };
+  const handleUserClick = useCallback(
+    (userId) => navigate(`/profile/${userId}`),
+    [navigate]
+  );
 
-  const handleFollowUser = async (userId) => {
-    setLocalFollowing((prevFollowing) => {
-      const updatedFollowing = new Set(prevFollowing);
-      updatedFollowing.has(userId)
-        ? updatedFollowing.delete(userId)
-        : updatedFollowing.add(userId);
-      return updatedFollowing;
-    });
-
-    try {
-      await dispatch(followUserAction(userId));
-    } catch (error) {
-      console.error("Follow user failed", error);
-
-      // Nếu API lỗi thì revert lại
-      setLocalFollowing((prevFollowing) => {
-        const revertedFollowing = new Set(prevFollowing);
-        revertedFollowing.has(userId)
-          ? revertedFollowing.delete(userId)
-          : revertedFollowing.add(userId);
-        return revertedFollowing;
+  const handleFollowUser = useCallback(
+    async (userId) => {
+      setLocalFollowing((prev) => {
+        const updated = new Set(prev);
+        updated.has(userId) ? updated.delete(userId) : updated.add(userId);
+        return updated;
       });
-    }
-  };
+
+      try {
+        await dispatch(followUserAction(userId));
+      } catch (error) {
+        setLocalFollowing((prev) => {
+          const reverted = new Set(prev);
+          reverted.has(userId) ? reverted.delete(userId) : reverted.add(userId);
+          return reverted;
+        });
+      }
+    },
+    [dispatch]
+  );
 
   return (
     <div className="max-w-3xl mx-4 p-4">
@@ -96,50 +98,24 @@ const Explore = () => {
         <FaCog className="text-gray-500 cursor-pointer hover:text-gray-700" />
       </div>
 
-      {loading && <p className="text-gray-500 mt-4">Loading...</p>}
-      {error && <p className="text-red-500 mt-4">{error}</p>}
+      {loading && <Loading />}
+      {error && <ErrorMessage error={error} />}
 
       <div className="mt-4 w-full max-w-2xl">
         <div className="space-y-4">
-          {filteredUsers.length > 0
-            ? filteredUsers.map((foundUser) => {
-                const isFollowing = localFollowing.has(foundUser.id);
-
-                return (
-                  <div
-                    key={foundUser.id}
-                    className="flex items-center justify-between bg-white shadow-md p-4 rounded-xl w-full"
-                  >
-                    <div
-                      className="flex items-center cursor-pointer"
-                      onClick={() => handleUserClick(foundUser.id)}
-                    >
-                      <img
-                        src={foundUser.image || "default-avatar.png"}
-                        alt={foundUser.fullName}
-                        className="w-12 h-12 rounded-full mr-4"
-                      />
-                      <div>
-                        <h2 className="text-lg font-semibold">
-                          {foundUser.fullName}
-                        </h2>
-                        <p className="text-gray-500 text-sm">{foundUser.bio}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleFollowUser(foundUser.id)}
-                      className={`px-4 py-2 rounded-lg text-white transition ${
-                        isFollowing
-                          ? "bg-[#0D8ADF] hover:bg-[#0B7AC0]"
-                          : "bg-gray-500 hover:bg-gray-600"
-                      }`}
-                    >
-                      {isFollowing ? "Following" : "Follow"}
-                    </button>
-                  </div>
-                );
-              })
-            : !loading && <p className="text-gray-500 mt-4">No users found</p>}
+          {filteredUsers.length > 0 ? (
+            filteredUsers.map((foundUser) => (
+              <UserCard
+                key={foundUser.id}
+                user={foundUser}
+                isFollowing={localFollowing.has(foundUser.id)}
+                onFollow={handleFollowUser}
+                onClick={handleUserClick}
+              />
+            ))
+          ) : (
+            !loading && <p className="text-gray-500 mt-4">No users found</p>
+          )}
         </div>
       </div>
     </div>

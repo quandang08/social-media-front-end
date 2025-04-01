@@ -63,7 +63,6 @@ export const authReducer = (state = initialState, action) => {
     case REGISTER_USER_REQUEST:
     case GET_ALL_USER_REQUEST:
     case GET_USER_PROFILE_REQUEST:
-    case FIND_USER_BY_NAME_REQUEST:
     case MARK_MESSAGE_AS_READ_REQUEST:
       return { ...state, loading: true, error: null };
 
