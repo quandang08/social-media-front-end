@@ -43,6 +43,8 @@ import {
   FETCH_EXPLANATION_REQUEST,
   FETCH_EXPLANATION_SUCCESS,
   FETCH_EXPLANATION_FAILURE,
+  SEND_MESSAGE_REQUEST,
+  ADD_NEW_MESSAGE,
 } from "./ActionType";
 
 const initialState = {
@@ -66,12 +68,30 @@ export const authReducer = (state = initialState, action) => {
     case MARK_MESSAGE_AS_READ_REQUEST:
       return { ...state, loading: true, error: null };
 
+    // Xử lý tin nhắn
+    case SEND_MESSAGE_REQUEST:
+      return {
+        ...state,
+
+        messages: [
+          ...state.messages,
+          {
+            ...action.payload,
+            isOptimistic: true,
+            status: "sending",
+            loading: true,
+            _tempId: action.payload.id,
+          },
+        ],
+      };
+
     case FETCH_EXPLANATION_REQUEST:
       return {
         ...state,
         error: null,
         explanation: null,
       };
+
     case LOGIN_USER_SUCCESS:
     case REGISTER_USER_SUCCESS:
       localStorage.setItem("jwt", action.payload.jwt);
@@ -217,8 +237,65 @@ export const authReducer = (state = initialState, action) => {
     case SEND_MESSAGE_SUCCESS:
       return {
         ...state,
-        loading: false,
-        messages: [...(state.messages || []), action.payload],
+        messages: state.messages.map((msg) =>
+          msg._tempId === action.payload.tempId
+            ? {
+                ...action.payload,
+                status: "sent",
+                isOptimistic: false,
+                loading: false,
+              }
+            : msg
+        ),
+      };
+
+    case SEND_MESSAGE_FAILURE:
+      return {
+        ...state,
+        messages: state.messages.map((msg) =>
+          msg._tempId === action.payload.tempId
+            ? {
+                ...msg,
+                status: "failed",
+                loading: false,
+              }
+            : msg
+        ),
+        error: action.payload.error,
+      };
+
+    case ADD_NEW_MESSAGE:
+      const now = Date.now();
+      const isDuplicate = state.messages.some(
+        (msg) => msg.id === action.payload.id
+      );
+
+      if (isDuplicate) return state;
+
+      const optimisticMsg = state.messages.find(
+        (msg) =>
+          msg.isOptimistic &&
+          msg.senderId === action.payload.senderId &&
+          Math.abs(now - new Date(msg.createdAt).getTime()) < 10000 &&
+          (msg.content === action.payload.content ||
+            msg._tempId === action.payload.tempId)
+      );
+
+      const newMessages = optimisticMsg
+        ? state.messages.map((msg) =>
+            msg.id === optimisticMsg.id
+              ? {
+                  ...action.payload,
+                  status: "sent",
+                  loading: false,
+                }
+              : msg
+          )
+        : [...state.messages, action.payload];
+
+      return {
+        ...state,
+        messages: newMessages,
       };
 
     case FETCH_CHAT_HISTORY_SUCCESS:
@@ -226,14 +303,21 @@ export const authReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         messages: action.payload || [],
+        error: null,
       };
 
     case EDIT_MESSAGE_SUCCESS:
       return {
         ...state,
         loading: false,
-        messages: (state.messages || []).map((msg) =>
-          msg.id === action.payload.id ? action.payload : msg
+        messages: state.messages.map((msg) =>
+          msg.id === action.payload.id
+            ? {
+                ...action.payload,
+                // Giữ lại trạng thái nếu là tin nhắn đang gửi
+                ...(msg.status === "sending" && { status: "sent" }),
+              }
+            : msg
         ),
       };
 
@@ -241,9 +325,7 @@ export const authReducer = (state = initialState, action) => {
       return {
         ...state,
         loading: false,
-        messages: (state.messages || []).filter(
-          (msg) => msg.id !== action.payload
-        ),
+        messages: state.messages.filter((msg) => msg.id !== action.payload),
       };
 
     case MARK_MESSAGE_AS_READ_SUCCESS:
@@ -255,7 +337,6 @@ export const authReducer = (state = initialState, action) => {
         ),
       };
 
-    case SEND_MESSAGE_FAILURE:
     case FETCH_CHAT_HISTORY_FAILURE:
     case EDIT_MESSAGE_FAILURE:
     case DELETE_MESSAGE_FAILURE:

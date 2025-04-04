@@ -56,6 +56,7 @@ import {
   FETCH_EXPLANATION_REQUEST,
   FETCH_EXPLANATION_SUCCESS,
   FETCH_EXPLANATION_FAILURE,
+  ADD_NEW_MESSAGE,
 } from "./ActionType";
 
 // Hàm lưu JWT vào localStorage
@@ -379,24 +380,63 @@ export const markAllNotificationsAsRead = () => async (dispatch, getState) => {
   }
 };
 
-// Gửi tin nhắn sử dụng
-export const sendMessage = (senderId, receiverId, content, messageType) => async (dispatch, getState) => {
-  dispatch({ type: SEND_MESSAGE_REQUEST });
-  try {
-    const response = await api.post("/api/messages/send", {
+
+// Gửi tin nhắn (phiên bản tối ưu nhất)
+export const sendMessage = (senderId, receiverId, content, type) => async (dispatch) => {
+  const tempId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+  
+  // Dispatch tin nhắn tạm (optimistic update)
+  dispatch({
+    type: SEND_MESSAGE_REQUEST,
+    payload: {
+      id: tempId,
+      _tempId: tempId, // Dùng để xử lý rollback khi fail
       senderId,
       receiverId,
       content,
-      messageType,
+      type,
+      isOptimistic: true,
+      createdAt: new Date().toISOString(),
+      status: 'sending'
+    }
+  });
+
+  try {
+    const response = await api.post('/api/messages/send', {
+      senderId,
+      receiverId,
+      content,
+      messageType: type,
+      tempId // Gửi tempId lên server để đồng bộ
     });
-    dispatch({ type: SEND_MESSAGE_SUCCESS, payload: response.data });
-  } catch (error) {
+    
+    // Dispatch tin nhắn thật khi API trả về thành công
     dispatch({
-      type: SEND_MESSAGE_FAILURE,
-      payload: error.response?.data?.message || error.message,
+      type: SEND_MESSAGE_SUCCESS,
+      payload: {
+        tempId,             // để đối chiếu tin nhắn tạm
+        ...response.data,   // dữ liệu tin nhắn thật từ server
+      }
     });
+
+    return response.data;
+  } catch (error) {
+    dispatch({ 
+      type: SEND_MESSAGE_FAILURE, 
+      payload: {
+        tempId,
+        error: error.response?.data?.message || error.message
+      }
+    });
+    throw error;
   }
 };
+
+// Action cho tin nhắn real-time nhận được từ socket
+export const addNewMessage = (message) => ({
+  type: ADD_NEW_MESSAGE,
+  payload: message
+});
 
 // Lấy lịch sử chat giữa 2 user
 export const fetchChatHistory = (userA, userB) => async (dispatch) => {
@@ -441,6 +481,7 @@ export const deleteMessage = (messageId) => async (dispatch, getState) => {
     });
   }
 };
+
 
 // Đánh dấu tin nhắn đã đọc
 export const markMessageAsRead = (messageId) => async (dispatch, getState) => {
