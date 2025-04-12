@@ -20,8 +20,9 @@ export default function useChatSocket(userId, onMessageReceived) {
         setIsConnected(true);
 
         // Subscribe to the topic for receiving messages
+        var subcribe_chat_endpoint = `/queue/chat.${userId}`
         const subscription = stompClient.subscribe(
-          `/user/queue/chat`,
+          subcribe_chat_endpoint,
           (message) => {
             console.log("📨 Nhận tin nhắn realtime:", message);
             if (message.body) {
