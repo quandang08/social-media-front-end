@@ -2,6 +2,46 @@ import SockJS from "sockjs-client";
 import { Client } from "@stomp/stompjs";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+const createStompClient = (
+  socket,
+  userId,
+  onMessageReceived,
+  setIsConnected,
+  stompClientRef
+) => {
+  return new Client({
+    webSocketFactory: () => socket,
+    reconnectDelay: 5000,
+    onConnect: () => {
+      console.log("🟢 WebSocket đã kết nối!");
+      setIsConnected(true);
+
+      const endpoint = `/queue/chat.${userId}`;
+      const subscription = stompClientRef.current.subscribe(
+        endpoint,
+        (message) => {
+          console.log("📨 Nhận tin nhắn realtime:", message);
+          try {
+            const data = JSON.parse(message.body);
+            onMessageReceived(data);
+          } catch (err) {
+            console.error("❌ Lỗi parse tin nhắn:", err);
+          }
+        }
+      );
+
+      console.log("🔔 Đã subscribe vào kênh:", subscription.id);
+    },
+    onStompError: (frame) => {
+      console.error("❌ Lỗi STOMP:", frame.headers.message);
+    },
+    onDisconnect: () => {
+      console.log("🔴 Ngắt kết nối WebSocket");
+      setIsConnected(false);
+    },
+  });
+};
+
 export default function useChatSocket(userId, onMessageReceived) {
   const stompClientRef = useRef(null);
   const [isConnected, setIsConnected] = useState(false);
@@ -12,65 +52,57 @@ export default function useChatSocket(userId, onMessageReceived) {
     console.log("🟡 Đang kết nối WebSocket...", userId);
     const socket = new SockJS("http://localhost:5454/ws");
 
-    const stompClient = new Client({
-      webSocketFactory: () => socket,
-      reconnectDelay: 5000,
-      onConnect: () => {
-        console.log("🟢 WebSocket đã kết nối!");
-        setIsConnected(true);
-
-        // Subscribe to the topic for receiving messages
-        var subcribe_chat_endpoint = `/queue/chat.${userId}`
-        const subscription = stompClient.subscribe(
-          subcribe_chat_endpoint,
-          (message) => {
-            console.log("📨 Nhận tin nhắn realtime:", message);
-            if (message.body) {
-              try {
-                const receivedMessage = JSON.parse(message.body);
-                onMessageReceived(receivedMessage);
-              } catch (error) {
-                console.error("❌ Lỗi parse tin nhắn:", error);
-              }
-            }
-          }
-        );
-
-        console.log("🔔 Đã subscribe vào kênh:", subscription.id);
-      },
-      onStompError: (frame) => {
-        console.error("❌ Lỗi STOMP:", frame.headers.message);
-      },
-      onDisconnect: () => {
-        console.log("🔴 Ngắt kết nối WebSocket");
-        setIsConnected(false);
-      },
-    });
-
+    const stompClient = createStompClient(
+      socket,
+      userId,
+      onMessageReceived,
+      setIsConnected,
+      stompClientRef
+    );
     stompClientRef.current = stompClient;
     stompClient.activate();
 
-    // Cleanup on unmount or userId change
     return () => {
       console.log("🧹 Dọn dẹp kết nối WebSocket");
       stompClient.deactivate();
     };
   }, [userId, onMessageReceived]);
 
-  const sendMessage = useCallback((message) => {
-    if (!stompClientRef.current?.connected) {
-      console.warn("⚠️ WebSocket chưa kết nối, không thể gửi");
-      return false;
-    }
+  const sendMessage = useCallback(
+    (message) => {
+      if (!isConnected) {
+        console.warn("⚠️ WebSocket chưa kết nối, không thể gửi");
+        return false;
+      }
 
-    console.log("📤 Đang gửi tin nhắn qua WebSocket:", message);
-    stompClientRef.current.publish({
-      destination: `/app/chat.sendMessage`,
-      body: JSON.stringify(message),
-      headers: { "content-type": "application/json" },
-    });
-    return true;
-  }, []);
+      console.log("📤 Đang gửi tin nhắn:", message);
+      stompClientRef.current.publish({
+        destination: `/app/chat.sendMessage`,
+        body: JSON.stringify(message),
+        headers: { "content-type": "application/json" },
+      });
+      return true;
+    },
+    [isConnected]
+  );
 
-  return { sendMessage, isConnected };
+  const deleteMessage = useCallback(
+    (message) => {
+      if (!isConnected) {
+        console.warn("⚠️ WebSocket chưa kết nối, không thể xóa");
+        return false;
+      }
+
+      console.log("🗑️ Gửi yêu cầu xoá tin nhắn:", message);
+      stompClientRef.current.publish({
+        destination: `/app/chat.deleteMessage`,
+        body: JSON.stringify(message),
+        headers: { "content-type": "application/json" },
+      });
+      return true;
+    },
+    [isConnected]
+  );
+
+  return { sendMessage, deleteMessage, isConnected };
 }

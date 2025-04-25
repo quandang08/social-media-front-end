@@ -33,23 +33,3 @@ export const REPLY_TWEET_FAILURE = "REPLY_TWEET_FAILURE"
 export const RETWEET_REQUEST = "RETWEET_REQUEST"
 export const RETWEET_SUCCESS = "RETWEET_SUCCESS"
 export const RETWEET_FAILURE = "RETWEET_FAILURE"
-
-/*
-📌 File định nghĩa các action types cho Redux liên quan đến tweet.
-
-🔹 Cấu trúc: Mỗi hành động có 3 trạng thái:  
-   - `_REQUEST`: Bắt đầu xử lý.  
-   - `_SUCCESS`: Xử lý thành công.  
-   - `_FAILURE`: Xử lý thất bại.  
-
-🔹 Các hành động chính:  
-   ✅ Tạo tweet (`TWEET_CREATE_*`)  
-   ✅ Xóa tweet (`TWEET_DELETE_*`)  
-   ✅ Lấy danh sách tweet (`GET_ALL_TWEETS_*`, `GET_USERS_TWEET_*`)  
-   ✅ Like tweet (`LIKE_TWEET_*`, `USER_LIKE_TWEET_*`)  
-   ✅ Tìm tweet theo ID (`FIND_TWEET_BY_ID_*`)  
-   ✅ Trả lời tweet (`REPLY_TWEET_*`)  
-   ✅ Retweet (`RETWEET_*`)  
-
-✅ Giúp Redux dễ dàng quản lý trạng thái của các yêu cầu API.
-*/

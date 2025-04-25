@@ -123,13 +123,3 @@ export const deleteTweet = (twitId) => async (dispatch) => {
     dispatch({ type: TWEET_DELETE_FAILURE, payload: error.message });
   }
 };
-
-/*
-File này chứa các Redux actions để xử lý các thao tác liên quan đến tweet, bao gồm:
-
-📥 Lấy danh sách tweet (getAllTweets, getUsersTweets, findTwitsById)
-❤️ Lấy danh sách tweet đã like (findTwitsByLikeContainesUser)
-✍️ Tạo tweet mới, trả lời tweet, retweet (createTweet, createTweetReply, createReTweet)
-👍 Like tweet (likeTweet)
-🗑 Xóa tweet (deleteTweet)
-*/

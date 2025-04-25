@@ -6,7 +6,7 @@ import {
   FaUserFriends,
 } from "react-icons/fa";
 import { IoIosSend } from "react-icons/io";
-import ChatBox from "./ChatBox";
+import ChatBox from "./ChatBox/ChatBox";
 import { useDispatch, useSelector } from "react-redux";
 import { getAllUsers } from "../../Store/Auth/Action";
 

@@ -66,10 +66,8 @@ const setJWT = (jwt) => {
   }
 };
 
-// Hàm lấy JWT từ localStorage
 const getJWT = () => localStorage.getItem("jwt") || null;
 
-// Hàm xử lý lỗi
 const getErrorMessage = (error) => {
   if (axios.isAxiosError(error)) {
     return error.response?.data?.message || "Lỗi từ server";
@@ -381,16 +379,15 @@ export const markAllNotificationsAsRead = () => async (dispatch, getState) => {
 };
 
 
-// Gửi tin nhắn (phiên bản tối ưu nhất)
+// Gửi tin nhắn
 export const sendMessage = (senderId, receiverId, content, type) => async (dispatch) => {
   const tempId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   
-  // Dispatch tin nhắn tạm (optimistic update)
   dispatch({
     type: SEND_MESSAGE_REQUEST,
     payload: {
       id: tempId,
-      _tempId: tempId, // Dùng để xử lý rollback khi fail
+      _tempId: tempId,
       senderId,
       receiverId,
       content,
@@ -407,15 +404,14 @@ export const sendMessage = (senderId, receiverId, content, type) => async (dispa
       receiverId,
       content,
       messageType: type,
-      tempId // Gửi tempId lên server để đồng bộ
+      tempId
     });
     
-    // Dispatch tin nhắn thật khi API trả về thành công
     dispatch({
       type: SEND_MESSAGE_SUCCESS,
       payload: {
-        tempId,             // để đối chiếu tin nhắn tạm
-        ...response.data,   // dữ liệu tin nhắn thật từ server
+        tempId,
+        ...response.data,
       }
     });
 
@@ -468,20 +464,32 @@ export const editMessage = (messageId, newContent) => async (dispatch, getState)
   }
 };
 
-// Xóa tin nhắn
-export const deleteMessage = (messageId) => async (dispatch, getState) => {
-  dispatch({ type: DELETE_MESSAGE_REQUEST });
+// Xóa tin nhắn , Buoc 2
+export const deleteMessage = (messageId) => async (dispatch) => {
   try {
-    await api.delete(`/api/messages/${messageId}`);
-    dispatch({ type: DELETE_MESSAGE_SUCCESS, payload: messageId });
+    // Gọi API xóa tin nhắn từ server
+    console.log('Making DELETE request to:', `/api/messages/${messageId}`);
+    const response = await api.delete(`/api/messages/${messageId}`);
+
+    // Nếu xóa thành công, dispatch action để xóa tin nhắn khỏi UI
+    dispatch(deleteMessageRealtime(messageId));
+    return response.data;
   } catch (error) {
-    dispatch({
-      type: DELETE_MESSAGE_FAILURE,
-      payload: error.response?.data?.message || error.message,
+    console.error('API Error:', {
+      status: error.response?.status,
+      data: error.response?.data,
+      headers: error.response?.headers,
     });
+    throw error;
   }
 };
 
+export const deleteMessageRealtime = (messageId) => {
+  return {
+    type: DELETE_MESSAGE_SUCCESS,
+    payload: messageId,
+  };
+};
 
 // Đánh dấu tin nhắn đã đọc
 export const markMessageAsRead = (messageId) => async (dispatch, getState) => {

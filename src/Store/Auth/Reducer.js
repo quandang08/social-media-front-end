@@ -12,7 +12,6 @@ import {
   FIND_USER_BY_ID_SUCCESS,
   FOLLOW_USER_SUCCESS,
   UPDATE_USER_SUCCESS,
-  FIND_USER_BY_NAME_REQUEST,
   FIND_USER_BY_NAME_SUCCESS,
   RESET_FIND_USER,
   GET_UNFOLLOWED_USERS_SUCCESS,
@@ -68,7 +67,6 @@ export const authReducer = (state = initialState, action) => {
     case MARK_MESSAGE_AS_READ_REQUEST:
       return { ...state, loading: true, error: null };
 
-    // Xử lý tin nhắn
     case SEND_MESSAGE_REQUEST:
       return {
         ...state,
@@ -143,16 +141,14 @@ export const authReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: null,
-        findUser: action.payload, // Cập nhật thông tin người được follow
-
-        // Cập nhật ngay danh sách following của current user
+        findUser: action.payload,
         user: {
           ...state.user,
           following: state.user.following.includes(action.payload.id)
             ? state.user.following.filter(
                 (userId) => userId !== action.payload.id
               )
-            : [...state.user.following, action.payload.id], // Nếu chưa follow thì thêm vào
+            : [...state.user.following, action.payload.id],
         },
       };
 
@@ -182,7 +178,6 @@ export const authReducer = (state = initialState, action) => {
     case FETCH_NOTIFICATIONS_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
-    /** ĐÁNH DẤU 1 THÔNG BÁO ĐÃ ĐỌC */
     case MARK_AS_READ_SUCCESS:
       return {
         ...state,
@@ -191,7 +186,6 @@ export const authReducer = (state = initialState, action) => {
         ),
       };
 
-    /** ĐÁNH DẤU TẤT CẢ THÔNG BÁO ĐÃ ĐỌC */
     case MARK_ALL_AS_READ_SUCCESS:
       return {
         ...state,
@@ -201,7 +195,6 @@ export const authReducer = (state = initialState, action) => {
         })),
       };
 
-    /** THÊM THÔNG BÁO MỚI */
     case ADD_NOTIFICATION:
       return {
         ...state,
@@ -218,7 +211,6 @@ export const authReducer = (state = initialState, action) => {
     case CREATE_NOTIFICATION_FAILURE:
       return { ...state, loading: false, error: action.payload };
 
-    /** XÓA 1 THÔNG BÁO */
     case DELETE_NOTIFICATION_SUCCESS:
       return {
         ...state,
@@ -227,7 +219,6 @@ export const authReducer = (state = initialState, action) => {
         ),
       };
 
-    /** XÓA TẤT CẢ THÔNG BÁO */
     case DELETE_ALL_NOTIFICATIONS_SUCCESS:
       return {
         ...state,
@@ -247,21 +238,6 @@ export const authReducer = (state = initialState, action) => {
               }
             : msg
         ),
-      };
-
-    case SEND_MESSAGE_FAILURE:
-      return {
-        ...state,
-        messages: state.messages.map((msg) =>
-          msg._tempId === action.payload.tempId
-            ? {
-                ...msg,
-                status: "failed",
-                loading: false,
-              }
-            : msg
-        ),
-        error: action.payload.error,
       };
 
     case ADD_NEW_MESSAGE:
@@ -314,7 +290,6 @@ export const authReducer = (state = initialState, action) => {
           msg.id === action.payload.id
             ? {
                 ...action.payload,
-                // Giữ lại trạng thái nếu là tin nhắn đang gửi
                 ...(msg.status === "sending" && { status: "sent" }),
               }
             : msg
@@ -324,8 +299,9 @@ export const authReducer = (state = initialState, action) => {
     case DELETE_MESSAGE_SUCCESS:
       return {
         ...state,
-        loading: false,
-        messages: state.messages.filter((msg) => msg.id !== action.payload),
+        messages: state.messages.filter(
+          (message) => message.id !== action.payload
+        ),
       };
 
     case MARK_MESSAGE_AS_READ_SUCCESS:
@@ -336,7 +312,20 @@ export const authReducer = (state = initialState, action) => {
           msg.id === action.payload.id ? { ...msg, isRead: true } : msg
         ),
       };
-
+    case SEND_MESSAGE_FAILURE:
+      return {
+        ...state,
+        messages: state.messages.map((msg) =>
+          msg._tempId === action.payload.tempId
+            ? {
+                ...msg,
+                status: "failed",
+                loading: false,
+              }
+            : msg
+        ),
+        error: action.payload.error,
+      };
     case FETCH_CHAT_HISTORY_FAILURE:
     case EDIT_MESSAGE_FAILURE:
     case DELETE_MESSAGE_FAILURE:
