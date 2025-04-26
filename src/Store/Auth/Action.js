@@ -464,30 +464,31 @@ export const editMessage = (messageId, newContent) => async (dispatch, getState)
   }
 };
 
-// Xóa tin nhắn , Buoc 2
-export const deleteMessage = (messageId) => async (dispatch) => {
-  try {
-    // Gọi API xóa tin nhắn từ server
-    console.log('Making DELETE request to:', `/api/messages/${messageId}`);
-    const response = await api.delete(`/api/messages/${messageId}`);
 
-    // Nếu xóa thành công, dispatch action để xóa tin nhắn khỏi UI
-    dispatch(deleteMessageRealtime(messageId));
-    return response.data;
-  } catch (error) {
-    console.error('API Error:', {
-      status: error.response?.status,
-      data: error.response?.data,
-      headers: error.response?.headers,
-    });
-    throw error;
-  }
-};
+// Xóa tin nhắn (Goi REST, ko realtime)
+// export const deleteMessage = (messageId) => async (dispatch) => {
+//   try {
+//     // Gọi API xóa tin nhắn từ server
+//     console.log('Making DELETE request to:', `/api/messages/${messageId}`);
+//     const response = await api.delete(`/api/messages/${messageId}`);
+
+//     // Nếu xóa thành công, dispatch action để xóa tin nhắn khỏi UI
+//     dispatch(deleteMessageRealtime(messageId));
+//     return response.data;
+//   } catch (error) {
+//     console.error('API Error:', {
+//       status: error.response?.status,
+//       data: error.response?.data,
+//       headers: error.response?.headers,
+//     });
+//     throw error;
+//   }
+// };
 
 export const deleteMessageRealtime = (messageId) => {
   return {
     type: DELETE_MESSAGE_SUCCESS,
-    payload: messageId,
+    payload: messageId, 
   };
 };
 

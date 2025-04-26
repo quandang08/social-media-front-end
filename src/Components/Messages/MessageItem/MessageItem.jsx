@@ -1,13 +1,11 @@
 import React, { useState, useRef } from "react";
 import "./MessageItem.css";
-import useChatSocket from "../useChatSocket";
 import EditModal from "./EditModal";
 
 function MessageItem({ message, isSender, onEdit, onDelete }) {
   const [showModal, setShowModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const pressTimerRef = useRef(null);
-  const { deleteMessage: deleteMessageSocket } = useChatSocket();
 
   const handlePressStart = () => {
     if (!isSender) return;
@@ -39,7 +37,6 @@ function MessageItem({ message, isSender, onEdit, onDelete }) {
 
   const handleDeleteClick = () => {
     setShowModal(false);
-    deleteMessageSocket(message);
     if (typeof onDelete === "function") {
       onDelete(message.id);
     }
